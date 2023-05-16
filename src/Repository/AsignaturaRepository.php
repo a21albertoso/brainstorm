@@ -39,6 +39,15 @@ class AsignaturaRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByEntregas($asignatura)
+{
+    return $this->createQueryBuilder('a')
+        ->leftJoin('a.entregas', 'e')
+        ->andWhere('a.id = :asignatura')
+        ->setParameter('asignatura', $asignatura)
+        ->getQuery()->getResult();
+}
+
 //    /**
 //     * @return Asignatura[] Returns an array of Asignatura objects
 //     */

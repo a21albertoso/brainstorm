@@ -5,11 +5,16 @@ namespace App\Controller;
 use App\Entity\Asignatura;
 use App\Entity\Tema;
 use App\Entity\User;
+use App\Entity\Entrega;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Validator\Constraints\Length;
 
 class PrincipalController extends AbstractController{
 
@@ -23,22 +28,66 @@ class PrincipalController extends AbstractController{
     #[Route(path: '/', name: 'redirection')]
     public function indexCharge(){
 
-        return $this->redirectToRoute('app_login');
+        return $this->redirectToRoute('login');
 
     }
     
-    #[Route(path: '/principal', name: 'principal')]
-    public function index(){
+    #[Route(path: '/principal/{id}', name: 'principal', methods: ["GET"])]
+    public function index(Security $security, AuthenticationUtils $authenticationUtils, $id = null){
 
-        $asignatura = $this->em->getRepository(Asignatura::class)->createQueryBuilder('a')
+        // Obtener el usuario autenticado
+        $user = $security->getUser();
         
-        ;
+        // Si el usuario está autenticado, obtén su ID
+        $userAsignaturas = $user ? $user->getAsignaturas() : [];
 
-        $asignatura->getQuery()->getResult();
+        $entregasPorAsignatura = [];
+        foreach ($userAsignaturas as $asignatura) {
+            $query = $this->em->getRepository(Entrega::class)->createQueryBuilder('e');
+            $query->where('e.asignatura = :asignatura_id')
+                ->setParameter('asignatura_id', $asignatura->getId());
+            $entregasPorAsignatura[$asignatura->getId()] = $query->getQuery()->getResult();
+        }
+
+        
+
+        $query = $this->em->getRepository(Asignatura::class)->createQueryBuilder('a');
+        //obtener asignaturas
+        $asignaturas = $query->getQuery()->getResult();
+
+        $query2 = $this->em->getRepository(Tema::class)->createQueryBuilder('t');
+        $temas = $query2->getQuery()->getResult();
+
+        $query4 = $this->em->getRepository(Entrega::class)->createQueryBuilder('e');
+        $entregaspacontar = $query4->getQuery()->getResult();
+
+
+        $temasPorAsignatura = [];
+        foreach ($asignaturas as $asignatura) {
+            $query = $this->em->getRepository(Tema::class)->createQueryBuilder('t');
+            $query->where('t.asignatura = :asignatura_id')
+                ->setParameter('asignatura_id', $asignatura->getId());
+            $temasPorAsignatura[$asignatura->getId()] = $query->getQuery()->getResult();
+        }
+
+        $temasPorAsignaturaReves = array_reverse($temasPorAsignatura);
+
+
+        
+        $numeroEntregas = count($entregasPorAsignatura); 
+
+        //correo del usuario
+        $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('principal/principal.html.twig',[
-            'titulo' => 'heyheyhey',
-            'asignatura' => $asignatura,
+            'asignaturas' => $asignaturas,
+            'temas' => $temas,
+            'entregas' => $entregaspacontar,
+            'numeroEntregas' => $numeroEntregas,
+            'last_username' => $lastUsername,
+            'userAsignaturas' => $userAsignaturas,
+            'entregasPorAsignatura' => $entregasPorAsignatura,
+            'temasPorAsignatura' => $temasPorAsignatura,
         ]);
 
     }

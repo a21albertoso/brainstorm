@@ -8,10 +8,12 @@
     
     <div class="container-fluid">
         <div class="row">
-        <h1 class="col-12 rosa text-center"> BRAINSTORM BOULEVARD </h1>
+        <h1 class="col-12 optimo rosa text-center"> BRAINSTORM BOULEVARD </h1>
         </div>
         <div class="row">
-
+        <p> hello, <strong>{{ last_username }}</strong> (<a href="http://localhost/brainstorm/public/logout">logout</a>)</p>
+        </div>
+        <div class="row">
             <div class="col-2 m-5 bg-white">
                 <ul class="nav flex-column">
                 {# aquí debajo meto la primera posición del array a mano
@@ -19,16 +21,20 @@
                     <li class="nav-item">
                         <a class="nav-link rosa" aria-current="page" href="#"><strong>Principal</strong></a>
                     </li>
-                    <li class="nav-item m-3">
-                        <a class="nav-link rosa" href="#">Bilogía</a>
-                        <li class="nav-item m-5 mt-0"> 
-                        <a class="nav-link rosa" href="#">La evolución</a>
-                        <a class="nav-link rosa" href="#">Tarea sobre darwin</a>
-                        </li>
-                    </li>
-                    <li class="nav-item m-3 mt-0">
-                        <a class="nav-link rosa" href="#">Música</a>
-                    </li>
+
+                    {% for asignatura in userAsignaturas %}
+                    <h2 class="rosa mt-2">{{ asignatura.nombre }}</h2>
+
+                        {% for tema in temasPorAsignatura[asignatura.id] %}
+                            <a class="rosa mt-2 ms-2">{{ tema.nombre }}</a>
+                        {% endfor %}
+
+                        {% for entrega in entregasPorAsignatura[asignatura.id] %}
+                            <a class="rosa mt-2 ms-2">{{ entrega.nombre }}</a>
+                        {% endfor %}
+
+                {% endfor %}
+
                 </ul>
             </div>
 
@@ -37,11 +43,25 @@
                 {# aquí debajo meto la primera posición del array a mano
                 y luego con ifs voy mirando si son temas/tareas o asignatúras #}
                     <li class="nav-item">
-                        <h1 class="rosa"><strong>Tareas Pendientes:</strong></h1>
+                        <h1 class="rosa text-center"><strong>Tareas Pendientes:</strong></h1>
                     </li>
                     {# aquí se indicaría un if, que si no hay tareas pendientes ponga: ninguna tarea por hacer. #}
                     <li class="nav-item m-5">
-                        <h3 class="rosa text-center">Tarea sobre darwin</h3>
+                      {% set numeroEntregas = 0 %}
+                        {% for asignatura in userAsignaturas %}
+                            {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
+                            {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
+
+                            {% if entregasAsignatura|length > 0 %}
+                                {% for entrega in entregasAsignatura %}
+                                    <h2 class="text-center"><a class="rosa">{{ entrega.nombre }}</a></h2>
+                                {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if numeroEntregas == 0 %}
+                            <h3 class="rosa text-center">No hay tareas pendientes</h3>
+                        {% endif %}
                     </li>
                     </li>
                 </ul>

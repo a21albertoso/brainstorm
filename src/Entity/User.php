@@ -32,9 +32,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Asignatura::class, inversedBy: 'users')]
     private Collection $asignaturas;
 
-    public function __construct()
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Entrega::class, orphanRemoval: true)]
+    private Collection $entregas;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Tema::class, orphanRemoval: true)]
+    private Collection $temas;
+
+    public function __construct($id = null, $email = null, $password = null)
     {
+        $this->id = $id;
+        $this->email = $email;
+        $this->password = $password;
         $this->asignaturas = new ArrayCollection();
+        $this->entregas = new ArrayCollection();
+        $this->temas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -127,6 +138,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function removeAsignatura(Asignatura $asignatura): self
     {
         $this->asignaturas->removeElement($asignatura);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Entrega>
+     */
+    public function getEntregas(): Collection
+    {
+        return $this->entregas;
+    }
+
+    public function addEntrega(Entrega $entrega): self
+    {
+        if (!$this->entregas->contains($entrega)) {
+            $this->entregas->add($entrega);
+            $entrega->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEntrega(Entrega $entrega): self
+    {
+        if ($this->entregas->removeElement($entrega)) {
+            // set the owning side to null (unless already changed)
+            if ($entrega->getUser() === $this) {
+                $entrega->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Tema>
+     */
+    public function getTemas(): Collection
+    {
+        return $this->temas;
+    }
+
+    public function addTema(Tema $tema): self
+    {
+        if (!$this->temas->contains($tema)) {
+            $this->temas->add($tema);
+            $tema->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTema(Tema $tema): self
+    {
+        if ($this->temas->removeElement($tema)) {
+            // set the owning side to null (unless already changed)
+            if ($tema->getUser() === $this) {
+                $tema->setUser(null);
+            }
+        }
 
         return $this;
     }

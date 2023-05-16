@@ -27,6 +27,10 @@ class Entrega
     #[ORM\JoinColumn(nullable: false)]
     private ?Asignatura $asignatura = null;
 
+    #[ORM\ManyToOne(inversedBy: 'entregas')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -76,6 +80,18 @@ class Entrega
     public function setAsignatura(?Asignatura $asignatura): self
     {
         $this->asignatura = $asignatura;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

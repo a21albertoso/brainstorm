@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello UserController!{% endblock %}
+
+{% block body %}
+
+<style>
+
+input{
+    margin-bottom: 20px;
+        margin: 20px;
+    margin-left: 20px;
+    border: 1px solid #AF4933;
+}
+
+label{
+    margin-left: 10px;
+    color: #AF4933;
+}
+
+.centrado{
+    top: 30%;
+    left: 40%;
+
+}
+
+button{
+    margin-bottom: 20px;
+    color: #AF4933;
+    border-color: #AF4933;
+}
+
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <h1 class="col-12 optimo rosa text-center"> BRAINSTORM BOULEVARD </h1>
+    </div>
+
+    <div class="row">
+        <h3 class="col-12 mt-5 optimo rosa text-center"> REGISTRATION FORM: </h3>
+    </div>
+
+    <div class="row centrado">
+        <div class="col-12 text-center mt-5">
+            <div class="bg-white">
+                {{form(registration_form)}}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
