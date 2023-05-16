@@ -14,7 +14,7 @@
         <p> hello, <strong>{{ last_username }}</strong> (<a href="http://localhost/brainstorm/public/logout">logout</a>)</p>
         </div>
         <div class="row">
-            <div class="col-2 m-5 bg-white">
+            <div class="col-2 d-flex m-5 bg-white">
                 <ul class="nav flex-column">
                 {# aquí debajo meto la primera posición del array a mano
                 y luego con ifs voy mirando si son temas/tareas o asignatúras #}
@@ -30,10 +30,18 @@
                         {% endfor %}
 
                         {% for entrega in entregasPorAsignatura[asignatura.id] %}
-                            <a class="rosa mt-2 ms-2">{{ entrega.nombre }}</a>
+                            <a class="rosa mt-2 ms-2">{{ entrega.nombre }} (tarea)</a>
                         {% endfor %}
 
+                 {# Agregar enlace para crear un nuevo tema #}
+                 {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <a href="{{ path('newtema', {'id': asignatura.id}) }}">Crear Tema</a>
+                {% endif %}
                 {% endfor %}
+                {# Comprueba si el usuario es docente o alumno #}
+                {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <a class="align-self-end mt-auto" href="{{ path('newuserasignatura') }}">Matricular</a>
+                {% endif %}
 
                 </ul>
             </div>

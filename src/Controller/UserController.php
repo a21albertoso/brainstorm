@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\User;
@@ -13,32 +12,43 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class UserController extends AbstractController
 {
-
     private $em;
 
-    public function __construct( EntityManagerInterface $em ){
+    public function __construct(EntityManagerInterface $em)
+    {
         $this->em = $em;
     }
 
     #[Route('/registration', name: 'userRegistration')]
-    public function userRegistration( UserPasswordHasherInterface $passwordHasher, Request $request ): Response
+    public function userRegistration(UserPasswordHasherInterface $passwordHasher, Request $request): Response
     {
-
         $user = new User();
         $registration_form = $this->createForm(UserType::class, $user);
         $registration_form->handleRequest($request);
-        if($registration_form->isSubmitted() && $registration_form->isValid()){
+
+        if ($registration_form->isSubmitted() && $registration_form->isValid()) {
+            // Verificar y modificar el email y el rol
+            $email = $user->getEmail();
+            if (substr($email, -9) === '_profesor') {
+                $newEmail = substr($email, 0, -9);
+                $user->setRoles(['ROLE_ADMIN']);
+                $user->setEmail($newEmail);
+            } else {
+                $user->setRoles(['ROLE_USER']);
+            }
+
             $plaintextPassword = $registration_form->get('password')->getData();
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $plaintextPassword
             );
+            
             $user->setPassword($hashedPassword);
-            $user->setRoles(["ROLE_USER"]);
             $this->em->persist($user);
             $this->em->flush();
             return $this->redirectToRoute('login');
         }
+
         return $this->render('user/index.html.twig', [
             'registration_form' => $registration_form->createView(),
         ]);
