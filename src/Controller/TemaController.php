@@ -43,4 +43,22 @@ class TemaController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+
+
+
+
+    #[Route('principal/tema/{id}', name: 'tema')]
+    public function Tema(TemaRepository $temaRepository, $id): Response
+    {
+
+        $tema = $temaRepository->find($id);
+
+        return $this->render('tema/tema.html.twig', [
+            'tema' => $tema,
+        ]);
+    }
+
+
+
 }

@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ asignatura.nombre }}
+{% endblock %}
+
+{% block body %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <h1 class="col-12 optimo rosa text-center">BRAINSTORM BOULEVARD</h1>
+        </div>
+        <div class="row">
+            <p>Hello, <strong>{{ last_username }}</strong> (<a class="rosa" href="{{ path('logout') }}"><strong>logout</strong></a>)</p>
+        </div>
+        <div class="row">
+          <div class="col-2 m-5 calendario bg-white">
+                <ul class="nav flex-column">
+                {# proximamente aquí tengo pensado incluir un calendario #}
+                    <li class="nav-item">
+                        <p class="m-5 text-center"><a class="nav nav-link rosa" href="#">Calendario</a></p>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-6 m-5 bg-white">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+
+                        <a class="rosa bg-dark" href="{{ path('principal') }}"><-Back</a>
+
+
+                        <h2 class="rosa text-center"><strong>Asignatura: {{ asignatura.nombre }}</strong></h2>
+                    </li>
+
+                    {% for tema in temas %}
+                    <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
+                        <a class="text-center mb-3" href="{{ path('tema', {id: tema.id}) }}">{{ tema.nombre }}</a>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
