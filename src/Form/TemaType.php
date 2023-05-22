@@ -19,6 +19,9 @@ class TemaType extends AbstractType
         ->add('submit', SubmitType::class, [
             'label' => 'Crear tema',
             'attr' => ['class' => 'btn btn-primary'],
+            'row_attr' => [
+                'class' => 'mt-3', 
+            ],
         ]);
     }
 

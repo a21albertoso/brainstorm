@@ -5,12 +5,16 @@
 
 {% block body %}
     {% if error %}
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger tamaño" role="alert">
     <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     </div> 
     {% endif %}
 
     <style>
+
+    .tamaño{
+        height: 80px;
+    }
 
     h1{
         padding: 20px;

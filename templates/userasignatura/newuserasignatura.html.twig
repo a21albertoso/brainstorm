@@ -3,11 +3,30 @@
 {% block title %}Hello UserController!{% endblock %}
 
 {% block body %}
-
-</style>
-
-
-    {{form(form)}}
-
-
+<div class="d-flex align-items-center justify-content-center vh-100">
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.user) }}
+                {{ form_widget(form.user, { 'attr': {'class': 'form-control'} }) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.asignaturas) }}
+                <div class="form-check">
+                    {% for asignatura in form.asignaturas %}
+                        <div class="form-check">
+                            {{ form_widget(asignatura, { 'attr': {'class': 'form-check-input'} }) }}
+                            {{ form_label(asignatura, null, {'label_attr': {'class': 'form-check-label'}}) }}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="text-center">
+                {{ form_widget(form.confirmar, { 'attr': {'class': 'btn btn-primary'} }) }}
+            </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
 {% endblock %}

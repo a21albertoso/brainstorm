@@ -38,8 +38,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Tema::class, orphanRemoval: true)]
     private Collection $temas;
 
-    #[ORM\OneToMany(targetEntity: UserAsignatura::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
-    private $userAsignaturas;
+//     /**
+//  * @OneToMany(targetEntity="App\Entity\UserAsignatura", mappedBy="user", cascade={"persist", "remove"})
+//  */
+// private $userAsignaturas;
 
     public function __construct($id = null, $email = null, $password = null)
     {
@@ -49,7 +51,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->asignaturas = new ArrayCollection();
         $this->entregas = new ArrayCollection();
         $this->temas = new ArrayCollection();
-        $this->userAsignaturas = new ArrayCollection();
+        // $this->userAsignaturas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -206,33 +208,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection|UserAsignatura[]
-     */
-    public function getUserAsignaturas(): Collection
-    {
-        return $this->userAsignaturas;
-    }
+    // /**
+    //  * @return Collection|UserAsignatura[]
+    //  */
+    // public function getUserAsignaturas(): Collection
+    // {
+    //     return $this->userAsignaturas;
+    // }
 
-    public function addUserAsignatura(UserAsignatura $userAsignatura): self
-    {
-        if (!$this->userAsignaturas->contains($userAsignatura)) {
-            $this->userAsignaturas[] = $userAsignatura;
-            $userAsignatura->setUser($this);
-        }
+    // public function addUserAsignatura(UserAsignatura $userAsignatura): self
+    // {
+    //     if (!$this->userAsignaturas->contains($userAsignatura)) {
+    //         $this->userAsignaturas[] = $userAsignatura;
+    //         $userAsignatura->setUser($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeUserAsignatura(UserAsignatura $userAsignatura): self
-    {
-        if ($this->userAsignaturas->removeElement($userAsignatura)) {
-            // set the owning side to null (unless already changed)
-            if ($userAsignatura->getUser() === $this) {
-                $userAsignatura->setUser(null);
-            }
-        }
+    // public function removeUserAsignatura(UserAsignatura $userAsignatura): self
+    // {
+    //     if ($this->userAsignaturas->removeElement($userAsignatura)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($userAsignatura->getUser() === $this) {
+    //             $userAsignatura->setUser(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }

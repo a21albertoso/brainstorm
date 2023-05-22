@@ -27,15 +27,17 @@ class Asignatura
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'asignaturas')]
     private Collection $users;
 
-    #[ORM\OneToMany(targetEntity: UserAsignatura::class, mappedBy: 'asignatura', cascade: ['persist', 'remove'])]
-    private $userAsignaturas;
+//     /**
+//  * @OneToMany(targetEntity="App\Entity\UserAsignatura", mappedBy="asignatura", cascade={"persist", "remove"})
+//  */
+// private $userAsignaturas;
 
     public function __construct()
     {
         $this->entregas = new ArrayCollection();
         $this->temas = new ArrayCollection();
         $this->users = new ArrayCollection();
-        $this->userAsignaturas = new ArrayCollection();
+        // $this->userAsignaturas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -142,33 +144,33 @@ class Asignatura
         return $this;
     }
 
-    /**
-     * @return Collection|UserAsignatura[]
-     */
-    public function getUserAsignaturas(): Collection
-    {
-        return $this->userAsignaturas;
-    }
+    // /**
+    //  * @return Collection|UserAsignatura[]
+    //  */
+    // public function getUserAsignaturas(): Collection
+    // {
+    //     return $this->userAsignaturas;
+    // }
 
-    public function addUserAsignatura(UserAsignatura $userAsignatura): self
-    {
-        if (!$this->userAsignaturas->contains($userAsignatura)) {
-            $this->userAsignaturas[] = $userAsignatura;
-            $userAsignatura->setAsignatura($this);
-        }
+    // public function addUserAsignatura(UserAsignatura $userAsignatura): self
+    // {
+    //     if (!$this->userAsignaturas->contains($userAsignatura)) {
+    //         $this->userAsignaturas[] = $userAsignatura;
+    //         $userAsignatura->setAsignatura($this);
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
-    public function removeUserAsignatura(UserAsignatura $userAsignatura): self
-    {
-        if ($this->userAsignaturas->removeElement($userAsignatura)) {
-            // set the owning side to null (unless already changed)
-            if ($userAsignatura->getAsignatura() === $this) {
-                $userAsignatura->setAsignatura(null);
-            }
-        }
+    // public function removeUserAsignatura(UserAsignatura $userAsignatura): self
+    // {
+    //     if ($this->userAsignaturas->removeElement($userAsignatura)) {
+    //         // set the owning side to null (unless already changed)
+    //         if ($userAsignatura->getAsignatura() === $this) {
+    //             $userAsignatura->setAsignatura(null);
+    //         }
+    //     }
 
-        return $this;
-    }
+    //     return $this;
+    // }
 }

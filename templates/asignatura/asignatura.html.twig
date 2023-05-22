@@ -34,7 +34,7 @@
 
                     {% for tema in temas %}
                     <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
-                        <a class="text-center mb-3" href="{{ path('tema', {id: tema.id}) }}">{{ tema.nombre }}</a>
+                    <a class="text-center mb-3" href="{{ path('tema', {id: tema.id}) }}">-> {{ tema.nombre }} <-</a>
                     {% endfor %}
                 </ul>
             </div>

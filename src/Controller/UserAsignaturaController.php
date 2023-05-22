@@ -2,7 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\UserAsignatura;
+use App\Entity\User;
+use App\Entity\Asignatura;
 use App\Form\UserAsignaturaType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,33 +18,29 @@ class UserAsignaturaController extends AbstractController
     #[Route('/principal/newuserasignatura', name: 'newuserasignatura', methods: ['GET', 'POST'])]
     public function new(UserRepository $userRepository, AsignaturaRepository $asignaturaRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
-        $userAsignatura = new UserAsignatura();
         // Dentro del controlador
         $users = $userRepository->findAll(); // Obtener los usuarios desde el repositorio
         $asignaturas = $asignaturaRepository->findAll(); // Obtener las asignaturas desde el repositorio
         
-        $usersOptions = [];
-        foreach ($users as $user) {
-            $usersOptions[$user->getId()] = $user; // Asignar el objeto User como valor
-        }
-
-        $asignaturasOptions = [];
-        foreach ($asignaturas as $asignatura) {
-            $asignaturasOptions[$asignatura->getId()] = $asignatura; // Asignar el objeto Asignatura como valor
-        }
-
-
-        $form = $this->createForm(UserAsignaturaType::class, $userAsignatura, [
-            'users' => $usersOptions, // Array de opciones para los usuarios
-            'asignaturas' => $asignaturasOptions, // Array de opciones para las asignaturas
+        $form = $this->createForm(UserAsignaturaType::class, null, [
+            'users' => $users, // Pasar la lista de usuarios al formulario
+            'asignaturas' => $asignaturas, // Pasar la lista de asignaturas al formulario
         ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($userAsignatura);
+            $data = $form->getData();
+            $user = $data['user']; // Obtener el objeto User seleccionado en el formulario
+            $asignaturas = $data['asignaturas']; // Obtener los objetos Asignatura seleccionados en el formulario
+
+            foreach ($asignaturas as $asignatura) {
+                $user->addAsignatura($asignatura); // Agregar la asignatura al usuario
+            }
+
+            $entityManager->persist($user);
             $entityManager->flush();
 
-            // Redireccionar o realizar alguna acción adicional después de guardar la entidad
+            // Redireccionar o realizar alguna acción adicional después de guardar los cambios
 
             return $this->redirectToRoute('principal');
         }
