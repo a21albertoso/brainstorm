@@ -11,7 +11,7 @@
         <h1 class="col-12 optimo rosa text-center"> BRAINSTORM BOULEVARD </h1>
         </div>
         <div class="row">
-        <p> hello, <strong>{{ last_username }}</strong> (<a class="rosa" href="http://localhost/brainstorm/public/logout"><strong>logout</strong></a>)</p>
+        <p> hola, <strong>{{ last_username }}</strong> (<a class="rosa" href="http://localhost/brainstorm/public/logout"><strong>logout</strong></a>)</p>
         </div>
         <div class="row">
             <div class="col-2 d-flex m-5 bg-white">
@@ -30,13 +30,16 @@
                         {% endfor %}
 
                         {% for entrega in entregasPorAsignatura[asignatura.id] %}
-                            <a class="rosa nav-link mt-2 ms-2">{{ entrega.nombre }} (tarea)</a>
+                             <a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a>
                         {% endfor %}
 
 
                  {# Agregar enlace para crear un nuevo tema #}
                  {% if 'ROLE_ADMIN' in app.user.roles %}
                     <a class="align-self-center nav-link azul mb-5 mt-2" href="{{ path('newtema', {'id': asignatura.id}) }}">Crear Tema</a>
+                {% endif %}
+                 {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <a class="align-self-center nav-link azul mb-5 mt-2" href="{{ path('newentrega', {'id': asignatura.id}) }}">Crear Entrega</a>
                 {% endif %}
                 {% endfor %}
                 {# Comprueba si el usuario es docente o alumno #}

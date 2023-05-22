@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EntregaRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -17,12 +19,6 @@ class Entrega
     #[ORM\Column(length: 255)]
     private ?string $nombre = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $archivo = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $fecha_subida = null;
-
     #[ORM\ManyToOne(inversedBy: 'entregas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Asignatura $asignatura = null;
@@ -30,6 +26,17 @@ class Entrega
     #[ORM\ManyToOne(inversedBy: 'entregas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $fecha_entrega = null;
+
+    #[ORM\OneToMany(mappedBy: 'entrega', targetEntity: Subida::class, orphanRemoval: true)]
+    private Collection $subidas;
+
+    public function __construct()
+    {
+        $this->subidas = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -44,30 +51,6 @@ class Entrega
     public function setNombre(string $nombre): self
     {
         $this->nombre = $nombre;
-
-        return $this;
-    }
-
-    public function getArchivo(): ?string
-    {
-        return $this->archivo;
-    }
-
-    public function setArchivo(string $archivo): self
-    {
-        $this->archivo = $archivo;
-
-        return $this;
-    }
-
-    public function getFechaSubida(): ?\DateTimeInterface
-    {
-        return $this->fecha_subida;
-    }
-
-    public function setFechaSubida(\DateTimeInterface $fecha_subida): self
-    {
-        $this->fecha_subida = $fecha_subida;
 
         return $this;
     }
@@ -92,6 +75,48 @@ class Entrega
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getFechaEntrega(): ?\DateTimeInterface
+    {
+        return $this->fecha_entrega;
+    }
+
+    public function setFechaEntrega(\DateTimeInterface $fecha_entrega): self
+    {
+        $this->fecha_entrega = $fecha_entrega;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subida>
+     */
+    public function getSubidas(): Collection
+    {
+        return $this->subidas;
+    }
+
+    public function addSubida(Subida $subida): self
+    {
+        if (!$this->subidas->contains($subida)) {
+            $this->subidas->add($subida);
+            $subida->setEntrega($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubida(Subida $subida): self
+    {
+        if ($this->subidas->removeElement($subida)) {
+            // set the owning side to null (unless already changed)
+            if ($subida->getEntrega() === $this) {
+                $subida->setEntrega(null);
+            }
+        }
 
         return $this;
     }

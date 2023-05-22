@@ -38,6 +38,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Tema::class, orphanRemoval: true)]
     private Collection $temas;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Subida::class, orphanRemoval: true)]
+    private Collection $subidas;
+
 //     /**
 //  * @OneToMany(targetEntity="App\Entity\UserAsignatura", mappedBy="user", cascade={"persist", "remove"})
 //  */
@@ -52,6 +55,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->entregas = new ArrayCollection();
         $this->temas = new ArrayCollection();
         // $this->userAsignaturas = new ArrayCollection();
+        $this->subidas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -237,4 +241,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     //     return $this;
     // }
+
+    /**
+     * @return Collection<int, Subida>
+     */
+    public function getSubidas(): Collection
+    {
+        return $this->subidas;
+    }
+
+    public function addSubida(Subida $subida): self
+    {
+        if (!$this->subidas->contains($subida)) {
+            $this->subidas->add($subida);
+            $subida->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubida(Subida $subida): self
+    {
+        if ($this->subidas->removeElement($subida)) {
+            // set the owning side to null (unless already changed)
+            if ($subida->getUser() === $this) {
+                $subida->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 }

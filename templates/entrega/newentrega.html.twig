@@ -1,0 +1,93 @@
+<div class="container centrado">
+  <div class="card" style="width: 400px;">
+    <div class="card-body">
+      {{ form_start(form) }}
+      
+      <div class="form-group">
+        {{ form_label(form.nombre, 'Nombre de la entrega: ') }}
+        {{ form_widget(form.nombre, { 'attr': {'class': 'form-control'} }) }}
+      </div>
+      
+      <div class="form-group">
+        {{ form_label(form.fecha_entrega, 'Fecha de entrega: ') }}
+        {{ form_widget(form.fecha_entrega, { 'attr': {'class': 'form-control calendario', 'style': 'height: 200px;'} }) }}
+      </div>
+      
+      <!-- Resto de los campos del formulario -->
+      
+      <div class="text-center">
+        {{ form_widget(form.submit, { 'attr': {'class': 'btn btn-primary mt-3'} }) }}
+      </div>
+      
+      {{ form_end(form) }}
+    </div>
+  </div>
+</div>
+
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+
+<style>
+
+            body{
+                background-color: #7E6D6A;
+            }
+
+            .azul{
+                color: #7E6D6A;
+            }
+
+            .rosa{
+                color: #AF4933;
+            }
+
+            .optimo{
+                font-family: "Optima";
+            }
+
+            .centrado{
+                position: absolute;
+                left: 30%;
+                top: 20%;
+            }
+
+            .calendario{
+                height: 125px;
+            }
+
+select {
+  width: 100%;
+  padding: 5px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+select option {
+  padding: 5px;
+}
+
+ </style>
+
+
+<script>
+    document.addEventListener('load', function() {
+        const dateInput = document.querySelector('#fecha_entrega');
+        flatpickr(dateInput, {
+        
+        arrowTop: "7px",
+        arrowLeft: "15px",
+        
+    });
+    });
+</script>
