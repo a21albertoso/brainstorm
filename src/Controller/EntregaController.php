@@ -7,6 +7,7 @@ use App\Entity\Entrega;
 use App\Entity\Subida;
 use App\Form\EntregaType;
 use App\Repository\EntregaRepository;
+use App\Service\ColorService;
 use Doctrine\ORM\EntityManagerInterface;
 use InformacionAdicionalType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,14 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class EntregaController extends AbstractController
 {
+
+    private $colorService;
+
+    public function __construct(ColorService $colorService)
+    {
+        $this->colorService = $colorService;
+    }
+
     #[Route('/principal/newentrega/{id}', name: 'newentrega', methods: ['GET', 'POST'])]
     public function nuevaEntrega(Security $security, Request $request, EntityManagerInterface $entityManager, $id): Response
     {
@@ -114,24 +123,6 @@ class EntregaController extends AbstractController
             'scale' => 2, // Configurar el número de decimales permitidos
         ])
         ->getForm();
-
-        $formularioNota = $this->createFormBuilder($subida)
-        ->add('nota', NumberType::class, [
-            'label' => 'Nota: ',
-            'required' => false,
-            'html5' => true,
-            'scale' => 2, // Configurar el número de decimales permitidos
-        ])
-        ->getForm();
-    
-        $formularioNota = $this->createFormBuilder($subida)
-        ->add('nota', NumberType::class, [
-            'label' => 'Nota: ',
-            'required' => false,
-            'html5' => true,
-            'scale' => 2, // Configurar el número de decimales permitidos
-        ])
-        ->getForm();
     
     $formularioNota->handleRequest($request);
     if ($formularioNota->isSubmitted() && $formularioNota->isValid()) {
@@ -154,11 +145,15 @@ class EntregaController extends AbstractController
     // Obtener todas las subidas de la entrega
     $subidas = $entrega->getSubidas();
 
+    $randomColor = $this->colorService->getRandomColor();
+
+
     return $this->render('entrega/entrega.html.twig', [
         'entrega' => $entrega,
         'subidas' => $subidas,
         'formularioSubida' => $formularioSubida->createView(),
         'formularioNota' => $formularioNota->createView(),
+        'randomColor' => $randomColor,
     ]);
 }
 

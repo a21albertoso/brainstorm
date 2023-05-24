@@ -5,70 +5,94 @@
 {% endblock %}
 
 {% block body %}
-    
     <div class="container-fluid">
+        <nav class="navbar mx-auto navbar-expand-md navbar-light bg-white">
+
+                 <h3 class="optimo rosa mx-auto ms-3 d-none d-md-inline" style="position: absolute; left: 50%; transform: translateX(-50%);" href="#">
+                Brainstorm Boulevard
+            </h3>
+            <span class="d-inline d-md-none">
+                <h3 class="optimo rosa mx-auto ms-3" href="#">
+                    Brainstorm
+                </h3>
+            </span>
+
+                <button class="navbar-toggler me-3" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                         <a class="nav-link dropdown-toggle d-flex align-items-center ms-2" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {% if app.user.foto is not null %}
+                                <img src="{{ asset('ruta/a/la/foto/' ~ app.user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 40px; height: 40px;">
+                            {% else %}
+                                <div class="rounded-circle" style="width: 40px; height: 40px; background-color: {{ randomColor }}; text-align: center; line-height: 40px; color: #fff; font-weight: bold;">
+                                    {{ app.user.email|first|upper }}
+                                </div>
+                            {% endif %}
+                            <span class="ms-2">{{ last_username }}</span>
+                        </a>
+
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a class="dropdown-item" href="{{ path('info') }}">Información del usuario</a>
+                                <a class="dropdown-item" href="{{ path('logout') }}">Cerrar sesión</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            
+        </nav>
+
         <div class="row">
-        <h1 class="col-12 optimo rosa text-center"> BRAINSTORM BOULEVARD </h1>
-        </div>
-        <div class="row">
-        <p> hola, <strong>{{ last_username }}</strong> (<a class="rosa" href="http://localhost/brainstorm/public/logout"><strong>logout</strong></a>)</p>
-        </div>
-        <div class="row">
-            <div class="col-2 d-flex m-5 bg-white">
+           <div class="col-md-2 m-5 d-flex mx-auto bg-white justify-content-center">
+    <ul class="nav flex-column align-items-center">
+        <li class="nav-item">
+            <a class="nav-link rosa" aria-current="page" href="#"><strong>Principal</strong></a>
+        </li>
+
+        {% for asignatura in userAsignaturas %}
+            <a class="nav-link rosa h2" href="{{ path('asignatura', {'id': asignatura.id}) }}"><strong>{{ asignatura.nombre }}</strong></a>
+
+            {% for tema in temasPorAsignatura[asignatura.id] %}
+                <a class="rosa nav-link" href="{{ path('tema', {id: tema.id}) }}">TEMA {{ loop.index }}: {{ tema.nombre }}</a>
+            {% endfor %}
+
+            {% for entrega in entregasPorAsignatura[asignatura.id] %}
+                <a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">ENTREGA: {{ entrega.nombre }}</a>
+            {% endfor %}
+
+            {% if 'ROLE_ADMIN' in app.user.roles %}
+                <a class="align-self-center nav-link azul mb-2 mt-2" href="{{ path('newtema', {'id': asignatura.id}) }}">Crear Tema</a>
+            {% endif %}
+            {% if 'ROLE_ADMIN' in app.user.roles %}
+                <a class="align-self-center nav-link azul mb-2 mt-2" href="{{ path('newentrega', {'id': asignatura.id}) }}">Crear Entrega</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if 'ROLE_ADMIN' in app.user.roles %}
+            <a class="align-self-center nav-link azul mx-auto" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+        {% endif %}
+    </ul>
+</div>
+
+
+
+            <div class="col-md-6 m-5 mx-auto bg-white">
                 <ul class="nav flex-column">
-                {# aquí debajo meto la primera posición del array a mano
-                y luego con ifs voy mirando si son temas/tareas o asignatúras #}
-                    <li class="nav-item">
-                        <a class="nav-link rosa" aria-current="page" href="#"><strong>Principal</strong></a>
-                    </li>
-
-                    {% for asignatura in userAsignaturas %}
-                    <a class="nav-link rosa h2" href="{{ path('asignatura', {'id': asignatura.id}) }}"><strong>{{ asignatura.nombre }}</strong></a>
-
-                        {% for tema in temasPorAsignatura[asignatura.id] %}
-                             <a class="rosa nav-link" href="{{ path('tema', {id: tema.id}) }}">{{ tema.nombre }}</a>
-                        {% endfor %}
-
-                        {% for entrega in entregasPorAsignatura[asignatura.id] %}
-                             <a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a>
-                        {% endfor %}
-
-
-                 {# Agregar enlace para crear un nuevo tema #}
-                 {% if 'ROLE_ADMIN' in app.user.roles %}
-                    <a class="align-self-center nav-link azul mb-5 mt-2" href="{{ path('newtema', {'id': asignatura.id}) }}">Crear Tema</a>
-                {% endif %}
-                 {% if 'ROLE_ADMIN' in app.user.roles %}
-                    <a class="align-self-center nav-link azul mb-5 mt-2" href="{{ path('newentrega', {'id': asignatura.id}) }}">Crear Entrega</a>
-                {% endif %}
-                {% endfor %}
-                {# Comprueba si el usuario es docente o alumno #}
-                   {% if 'ROLE_ADMIN' in app.user.roles %}
-                    <a class="align-self-start nav-link azul mx-auto" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
-                {% endif %}
-                </ul>
-
-             
-                
-            </div>
-
-            <div class="col-6 m-5 bg-white">
-                <ul class="nav flex-column">
-                {# aquí debajo meto la primera posición del array a mano
-                y luego con ifs voy mirando si son temas/tareas o asignatúras #}
                     <li class="nav-item">
                         <h1 class="rosa text-center"><strong>Tareas Pendientes:</strong></h1>
                     </li>
-                    {# aquí se indicaría un if, que si no hay tareas pendientes ponga: ninguna tarea por hacer. #}
                     <li class="nav-item m-5">
-                      {% set numeroEntregas = 0 %}
+                        {% set numeroEntregas = 0 %}
                         {% for asignatura in userAsignaturas %}
                             {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
                             {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
 
                             {% if entregasAsignatura|length > 0 %}
                                 {% for entrega in entregasAsignatura %}
-                                    <h2 class="text-center"><a class="rosa nav-link">{{ entrega.nombre }}</a></h2>
+                                    <h2 class="text-center"><a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a></h2>
                                 {% endfor %}
                             {% endif %}
                         {% endfor %}
@@ -77,25 +101,18 @@
                             <h3 class="azul text-center">No hay tareas pendientes</h3>
                         {% endif %}
                     </li>
-                    </li>
                 </ul>
             </div>
 
-             <div class="col-2 m-5 bg-white">
+            <div class="col-md-2 mx-auto m-5 bg-white calendario">
                 <ul class="nav flex-column">
-                {# proximamente aquí tengo pensado incluir un calendario #}
                     <li class="nav-item">
                         <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p>
                     </li>
                 </ul>
             </div>
-
         </div>
-
-
-
-        </div>
-
     </div>
+
 
 {% endblock %}

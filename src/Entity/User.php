@@ -41,6 +41,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Subida::class, orphanRemoval: true)]
     private Collection $subidas;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $foto = null;
+
 //     /**
 //  * @OneToMany(targetEntity="App\Entity\UserAsignatura", mappedBy="user", cascade={"persist", "remove"})
 //  */
@@ -268,6 +271,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $subida->setUser(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFoto(): ?string
+    {
+        return $this->foto;
+    }
+
+    public function setFoto(?string $foto): self
+    {
+        $this->foto = $foto;
 
         return $this;
     }

@@ -6,6 +6,7 @@ use App\Entity\Asignatura;
 use App\Entity\Tema;
 use App\Form\TemaType;
 use App\Repository\TemaRepository;
+use App\Service\ColorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,6 +16,14 @@ use Symfony\Component\Security\Core\Security;
 
 class TemaController extends AbstractController
 {
+
+    private $colorService;
+
+    public function __construct(ColorService $colorService)
+    {
+        $this->colorService = $colorService;
+    }
+
     #[Route('/principal/newtema/{id}', name: 'newtema', methods: ['GET', 'POST'])]
 
     public function nuevoTema(Security $security, Request $request, EntityManagerInterface $entityManager, $id): Response
@@ -54,8 +63,12 @@ class TemaController extends AbstractController
 
         $tema = $temaRepository->find($id);
 
+        $randomColor = $this->colorService->getRandomColor();
+
+
         return $this->render('tema/tema.html.twig', [
             'tema' => $tema,
+            'randomColor' => $randomColor,
         ]);
     }
 

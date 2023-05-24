@@ -15,15 +15,19 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Validator\Constraints\Length;
+use App\Service\ColorService;
+
 
 class PrincipalController extends AbstractController{
 
     private $em;
+    private $colorService;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, ColorService $colorService)
     {
         $this->em = $em;
-    } 
+        $this->colorService = $colorService;
+    }
 
     #[Route(path: '/', name: 'redirection')]
     public function indexCharge(){
@@ -33,7 +37,7 @@ class PrincipalController extends AbstractController{
     }
     
     #[Route(path: '/principal/{id}', name: 'principal', methods: ["GET"])]
-    public function index(Security $security, AuthenticationUtils $authenticationUtils, $id = null){
+    public function index(ColorService $colorService ,Security $security, AuthenticationUtils $authenticationUtils, $id = null){
 
         // Obtener el usuario autenticado
         $user = $security->getUser();
@@ -70,10 +74,8 @@ class PrincipalController extends AbstractController{
             $temasPorAsignatura[$asignatura->getId()] = $query->getQuery()->getResult();
         }
 
-        $temasPorAsignaturaReves = array_reverse($temasPorAsignatura);
+        $randomColor = $this->colorService->getRandomColor();
 
-
-        
         $numeroEntregas = count($entregasPorAsignatura); 
 
         //correo del usuario
@@ -88,10 +90,25 @@ class PrincipalController extends AbstractController{
             'userAsignaturas' => $userAsignaturas,
             'entregasPorAsignatura' => $entregasPorAsignatura,
             'temasPorAsignatura' => $temasPorAsignatura,
+            'randomColor' => $randomColor,
         ]);
 
     }
 
+    #[Route(path: '/principal/usuario', name: 'info', methods: ["GET"])]
+public function usuarioInfo()
+{
+
+    $randomColor = $this->colorService->getRandomColor();
+
+    return $this->render('principal/perfil.html.twig',[
+        'randomColor' => $randomColor,
+    ]);
 }
+
+
+}
+
+
 
 ?>
