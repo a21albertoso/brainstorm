@@ -6,6 +6,7 @@ use App\Entity\Asignatura;
 use App\Entity\Tema;
 use App\Entity\User;
 use App\Entity\Entrega;
+use App\Form\FotoType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -16,18 +17,24 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Validator\Constraints\Length;
 use App\Service\ColorService;
+use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 
 class PrincipalController extends AbstractController{
 
-    private $em;
+    private $doctrine;
     private $colorService;
-
-    public function __construct(EntityManagerInterface $em, ColorService $colorService)
+    private $em;
+    
+    public function __construct(EntityManagerInterface $em, ColorService $colorService, ManagerRegistry $doctrine)
     {
         $this->em = $em;
         $this->colorService = $colorService;
+        $this->doctrine = $doctrine;
     }
+    
 
     #[Route(path: '/', name: 'redirection')]
     public function indexCharge(){
@@ -94,17 +101,49 @@ class PrincipalController extends AbstractController{
         ]);
 
     }
-
-    #[Route(path: '/principal/usuario', name: 'info', methods: ["GET"])]
-public function usuarioInfo()
-{
-
-    $randomColor = $this->colorService->getRandomColor();
-
-    return $this->render('principal/perfil.html.twig',[
-        'randomColor' => $randomColor,
-    ]);
-}
+    
+    #[Route(path: '/principal/usuario', name: 'info', methods: ["GET", "POST"])]
+    public function usuarioInfo(Request $request, SluggerInterface $slugger)
+    {
+        $randomColor = $this->colorService->getRandomColor();
+    
+        $user = $this->getUser(); // Obtener el usuario actualmente autenticado
+        $form = $this->createForm(FotoType::class);
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+            $foto = $form->get('foto')->getData();
+    
+            if ($foto) {
+                $originalFilename = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$foto->guessExtension();
+    
+                try {
+                    $foto->move(
+                        $this->getParameter('fotos_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    throw new \Exception("Hay un problema con tu foto de perfil");
+                }
+    
+                $user->setFoto($newFilename);
+            }
+    
+            $entityManager = $this->doctrine->getManager();
+            $entityManager->persist($user);
+            $entityManager->flush();
+    
+            return $this->redirectToRoute('info');
+        }
+    
+        return $this->render('principal/perfil.html.twig', [
+            'randomColor' => $randomColor,
+            'form' => $form->createView(),
+        ]);
+    }
+    
 
 
 }

@@ -5,46 +5,53 @@
 {% block body %}
 
 <style>
+.container-fluid {
+    padding: 20px;
+}
 
-input{
+h1, h3 {
+    padding: 20px;
+    background-color: #fff;
+    text-align: center;
+}
+
+form {
+    margin-top: 50px;
+    text-align: center;
+}
+
+input {
+    margin-top: 20px;
     margin-bottom: 20px;
-        margin: 20px;
-    margin-left: 20px;
+    padding: 10px;
     border: 1px solid #AF4933;
 }
 
-label{
-    margin-left: 10px;
+label {
     color: #AF4933;
+    font-weight: bold;
 }
 
-.centrado{
-    top: 30%;
-    left: 40%;
-
-}
-
-button{
+button {
+    margin-top: 20px;
     margin-bottom: 20px;
+    padding: 10px 20px;
     color: #AF4933;
-    border-color: #AF4933;
+    border: 1px solid #AF4933;
 }
 
 </style>
 
 <div class="container-fluid">
     <div class="row">
-        <h1 class="col-12 optimo rosa bg-white text-center"> BRAINSTORM BOULEVARD </h1>
+        <h1 class="col-12 optimo rosa bg-white">BRAINSTORM BOULEVARD</h1>
     </div>
 
-    <div class="row">
-        <h3 class="col-12 mt-5 optimo rosa bg-white text-center"> REGISTRATION FORM: </h3>
-    </div>
-
-    <div class="row centrado">
-        <div class="col-12 text-center mt-5">
-            <div class="bg-white">
-                {{form(registration_form)}}
+    <div class="row bg-white">
+        <h3 class="col-12 mt-2 optimo rosa bg-white">REGISTRATION FORM:</h3>
+        <div class="col-12 text-center">
+            <div class="">
+                {{ form(registration_form) }}
             </div>
         </div>
     </div>

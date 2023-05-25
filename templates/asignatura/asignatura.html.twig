@@ -27,7 +27,7 @@
                         <li class="nav-item dropdown">
                          <a class="nav-link dropdown-toggle d-flex align-items-center ms-2" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {% if app.user.foto is not null %}
-                                <img src="{{ asset('ruta/a/la/foto/' ~ app.user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 40px; height: 40px;">
+                                <img src="{{ asset('uploads/fotos/' ~ app.user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 40px; height: 40px;">
                             {% else %}
                                 <div class="rounded-circle" style="width: 40px; height: 40px; background-color: {{ randomColor }}; text-align: center; line-height: 40px; color: #fff; font-weight: bold;">
                                     {{ app.user.email|first|upper }}
@@ -59,18 +59,20 @@
             <div class="col-md-6 m-5 mx-auto order-1 bg-white">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <a class="rosa bg-dark" href="{{ path('principal') }}"><- Back</a>
+                        <a class="link-dark rosa" href="{{ path('principal') }}"><span class="material-symbols-outlined">
+                    arrow_back
+                    </span></a>
                         <h2 class="rosa text-center"><strong>Asignatura: {{ asignatura.nombre }}</strong></h2>
                     </li>
 
                     {% for tema in temas %}
                         <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
-                        <a class="text-center nav-link rosa mb-3" href="{{ path('tema', {id: tema.id}) }}"><strong>-> TEMA {{ loop.index }}: {{ tema.nombre }} <-</strong></a>
+                        <a class="text-center nav-link rosa mb-3" href="{{ path('tema', {id: tema.id}) }}"><strong> TEMA {{ loop.index }}: {{ tema.nombre }} </strong></a>
                     {% endfor %}
 
                     {% for entrega in entregas %}
                         <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
-                        <a class="text-center nav-link rosa mb-3" href="{{ path('entrega', {id: entrega.id}) }}"><strong>->-> ENTREGA: {{ entrega.nombre }} <-<-</strong></a>
+                        <a class="text-center nav-link rosa mb-3" href="{{ path('entrega', {id: entrega.id}) }}"><strong> ENTREGA: {{ entrega.nombre }} </strong></a>
                     {% endfor %}
                 </ul>
             </div>
