@@ -62,60 +62,20 @@
                 <h1 class="rosa text-center"><strong>{{ entrega.nombre }}</strong></h1>
                 <p class="text-secondary">Fecha de entrega: {{ entrega.fechaEntrega|date('Y-m-d H:i') }}</p>
 
-                <h2 class="rosa text-center">Enviar Tarea:</h2>
-
-                {# Mostrar mensaje de archivo enviado y contenido del archivo #}
-                {% if app.flashes('success') is not empty %}
-                    <div class="alert alert-success">
-                        {{ app.flashes('success')|first }} La tarea ha sido correctamente enviada, para realizar cambios, volver a subir.
-                    </div>
-                {% endif %}
-
-                {% if app.session.get('contenido_archivo') is not null %}
-                    <div class="alert alert-info">
-                        <h5>Información del archivo:</h5>
-                        <p>{{ app.session.get('contenido_archivo') }}</p>
-                    </div>
-                {% endif %}
-
-                {% if 'ROLE_ADMIN' in app.user.roles %}
-                    {% if subidas is not empty %}
-                        {% for subida in subidas %}
-                            <div class="alert alert-info">
-                                <h5>Archivo enviado por {{ subida.user.email }}:</h5>
-                                <p>{{ subida.file }}</p>
-                                <p>Fecha de subida: {{ subida.fechaSubida|date('Y-m-d H:i') }}</p>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endif %}
-
-                {# Mostrar formulario de subida de archivo #}
-                {{ form_start(formularioSubida) }}
-                    {{ form_widget(formularioSubida.file) }}
-                    {{ form_row(formularioSubida._token) }}
-                    <button type="submit" class="btn btn-primary">Enviar archivo</button>
-                {{ form_end(formularioSubida) }}
-
-                {% if 'ROLE_ADMIN' in app.user.roles %}
-                    {# Mostrar formulario de nota del administrador #}
-                    {{ form_start(formularioNota) }}
-                    {{ form_widget(formularioNota.nota, {'attr': {'step': 'any'}}) }}
-                    {{ form_row(formularioNota._token) }}
-                    <button type="submit" class="btn btn-primary">Agregar nota</button>
-                    {{ form_end(formularioNota) }}
-                {% endif %}
-
-                {# Mostrar información de la subida y la nota del administrador si están disponibles #}
-                {% if entrega.subidas is not empty %}
-                    {% for subida in entrega.subidas %}
-                        <p>Archivo enviado: {{ subida.file }}</p>
-                        <p>Fecha de subida: {{ subida.fechaSubida|date('Y-m-d H:i') }}</p>
-                        {% if subida.nota is not empty %}
-                            <p>Nota de la tarea: {{ subida.nota }}</p>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
+                {{ form_start(formArchivo) }}
+                    {{ form_row(formArchivo.file, {
+                        'label': 'Archivo',
+                        'attr': {
+                            'class': 'form-control',
+                            'data-title': 'Seleccionar foto'
+                        }
+                    }) }}
+                    {{ form_row(formArchivo.guardar, {
+                        'label': 'Guardar',
+                        'attr': {'class': 'btn btn-primary mt-2'}
+                    }) }}
+                {{ form_end(formArchivo) }}
+                
             </div>
         </div>
     </div>

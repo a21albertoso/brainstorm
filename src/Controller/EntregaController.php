@@ -6,10 +6,12 @@ use App\Entity\Asignatura;
 use App\Entity\Entrega;
 use App\Entity\Subida;
 use App\Form\EntregaType;
+use App\Form\SubidaType;
 use App\Repository\EntregaRepository;
+use App\Repository\SubidaRepository;
 use App\Service\ColorService;
 use Doctrine\ORM\EntityManagerInterface;
-use InformacionAdicionalType;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,7 +19,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class EntregaController extends AbstractController
 {
@@ -58,106 +63,92 @@ class EntregaController extends AbstractController
     }
 
     #[Route('/principal/entrega/{id}', name: 'entrega')]
-    public function entrega(SessionInterface $session, Security $security, Request $request, EntregaRepository $entregaRepository, $id, EntityManagerInterface $entityManager): Response
+    public function entrega(ManagerRegistry $doctrine, SluggerInterface $slugger, SessionInterface $session, Security $security, Request $request, EntregaRepository $entregaRepository, SubidaRepository $subidaRepository, EntityManagerInterface $entityManager, $id): Response
     {
         $entrega = $entregaRepository->find($id);
+        $subidas = $subidaRepository->findAll();
         $subida = new Subida();
     
-        $formularioSubida = $this->createFormBuilder($subida)
-            ->add('file', FileType::class, [
-                'label' => 'Archivo: ',
-                'required' => true,
-            ])
-            ->getForm();
+        $formArchivo = $this->createForm(SubidaType::class, $subida);
+        $formArchivo->handleRequest($request);
+
+        if ($formArchivo->isSubmitted() && $formArchivo->isValid()) {
+            $archivo = $formArchivo->get('file')->getData();
     
-        $formularioSubida->handleRequest($request);
-        if ($formularioSubida->isSubmitted() && $formularioSubida->isValid()) {
-            $archivo = $formularioSubida->get('file')->getData();
+            $user = $security->getUser();
+
+            if ($archivo) {
+                $originalFilename = pathinfo($archivo->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.$user->getUserIdentifier().uniqid().'.'.$archivo->guessExtension();
     
-            // Obtener el usuario actual
-            $usuarioActual = $security->getUser();
+                try {
+                    $archivo->move(
+                        $this->getParameter('archivos_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    throw new \Exception("Hay un problema con tu foto de perfil");
+                }
     
-            // Buscar una subida existente por el usuario y la tarea
-            $subidaExistente = $entityManager->getRepository(Subida::class)->findOneBy([
-                'entrega' => $entrega,
-                'user' => $usuarioActual,
-            ]);
-    
-            if ($subidaExistente) {
-                // Reemplazar el archivo en la subida existente
-                $subidaExistente->setFile($archivo);
-                $subidaExistente->setFechaSubida(new \DateTime());
-            } else {
-                // Guardar información de la subida
-                $subida->setFile($archivo);
+                $subida->setFile($newFilename);
                 $subida->setFechaSubida(new \DateTime());
-                $subida->setEntrega($entrega);
-                
-                // Asignar el usuario actual a la subida
-                $subida->setUser($usuarioActual);
-    
-                $entityManager->persist($subida);
+                $subida->setEntrega($entrega); // Establecer la relación con la entrega
+
+                $user = $security->getUser(); // Establecer la relación con el user
+                if ($user instanceof UserInterface) {
+                    $subida->setUser($user);
+                }
+
             }
     
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($subida);
             $entityManager->flush();
     
-            // Establecer variable de sesión o propiedad de Subida para indicar que el archivo fue enviado
-            $this->addFlash('success', 'Archivo enviado correctamente');
-
-            $rutaTemporal = $archivo->getRealPath();
-    
-             $contenidoArchivo = file_get_contents($rutaTemporal);
-
-        // Establecer la variable de sesión para mostrar la información del archivo en el Twig
-        $session->set('contenido_archivo', $contenidoArchivo);
-
-        return $this->redirectToRoute('entrega', ['id' => $id]);
+            return $this->redirectToRoute('entrega', ['id' => $id]);
         }
-    
-
-    $formularioNota = $this->createFormBuilder($subida)
-        ->add('nota', NumberType::class, [
-            'label' => 'Nota: ',
-            'required' => false,
-            'html5' => true,
-            'scale' => 2, // Configurar el número de decimales permitidos
-        ])
-        ->getForm();
-    
-    $formularioNota->handleRequest($request);
-    if ($formularioNota->isSubmitted() && $formularioNota->isValid()) {
-        $nota = $formularioNota->get('nota')->getData();
-    
-        // Obtener la subida actual
-        $subidaActual = $entrega->getSubidas()->first();
-    
-        if ($subidaActual) {
-            // Guardar la nota en la subida actual
-            $subidaActual->setNota($nota);
-            $entityManager->flush();
-        }
-    
-        $this->addFlash('success', 'Nota agregada correctamente');
-    
-        return $this->redirectToRoute('entrega', ['id' => $id]);
-    }
-    
-    // Obtener todas las subidas de la entrega
-    $subidas = $entrega->getSubidas();
 
     $randomColor = $this->colorService->getRandomColor();
 
 
     return $this->render('entrega/entrega.html.twig', [
         'entrega' => $entrega,
-        'subidas' => $subidas,
-        'formularioSubida' => $formularioSubida->createView(),
-        'formularioNota' => $formularioNota->createView(),
         'randomColor' => $randomColor,
+        'formArchivo' => $formArchivo->createView(),
     ]);
 }
 
-
+// $user = $this->getUser(); // Obtener el usuario actualmente autenticado
+//         $form = $this->createForm(FotoType::class);
+//         $form->handleRequest($request);
+    
+//         if ($form->isSubmitted() && $form->isValid()) {
+//             $foto = $form->get('foto')->getData();
+    
+//             if ($foto) {
+//                 $originalFilename = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
+//                 $safeFilename = $slugger->slug($originalFilename);
+//                 $newFilename = $safeFilename.'-'.uniqid().'.'.$foto->guessExtension();
+    
+//                 try {
+//                     $foto->move(
+//                         $this->getParameter('fotos_directory'),
+//                         $newFilename
+//                     );
+//                 } catch (FileException $e) {
+//                     throw new \Exception("Hay un problema con tu foto de perfil");
+//                 }
+    
+//                 $user->setFoto($newFilename);
+//             }
+    
+//             $entityManager = $this->doctrine->getManager();
+//             $entityManager->persist($user);
+//             $entityManager->flush();
+    
+//             return $this->redirectToRoute('info');
+//         }
 
     
 }
