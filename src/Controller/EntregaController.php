@@ -20,6 +20,7 @@ use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -68,6 +69,13 @@ class EntregaController extends AbstractController
         $entrega = $entregaRepository->find($id);
         $subidas = $subidaRepository->findAll();
         $subida = new Subida();
+
+
+        $user = $this->getUser();
+
+    // Obtener la última subida del usuario
+        $latestSubida = $subidaRepository->findLatestSubidaByUser($user);
+
     
         $formArchivo = $this->createForm(SubidaType::class, $subida);
         $formArchivo->handleRequest($request);
@@ -93,6 +101,7 @@ class EntregaController extends AbstractController
     
                 $subida->setFile($newFilename);
                 $subida->setFechaSubida(new \DateTime());
+
                 $subida->setEntrega($entrega); // Establecer la relación con la entrega
 
                 $user = $security->getUser(); // Establecer la relación con el user
@@ -107,6 +116,7 @@ class EntregaController extends AbstractController
             $entityManager->flush();
     
             return $this->redirectToRoute('entrega', ['id' => $id]);
+
         }
 
     $randomColor = $this->colorService->getRandomColor();
@@ -115,6 +125,8 @@ class EntregaController extends AbstractController
     return $this->render('entrega/entrega.html.twig', [
         'entrega' => $entrega,
         'randomColor' => $randomColor,
+        'subida' => $subida,
+        'latestSubida' => $latestSubida,
         'formArchivo' => $formArchivo->createView(),
     ]);
 }

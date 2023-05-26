@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Subida;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -38,6 +39,17 @@ class SubidaRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+
+    public function findLatestSubidaByUser(User $user)
+{
+    return $this->createQueryBuilder('s')
+        ->andWhere('s.user = :user')
+        ->orderBy('s.fecha_subida', 'DESC')
+        ->setMaxResults(1)
+        ->setParameter('user', $user)
+        ->getQuery()
+        ->getOneOrNullResult();
+}
 
 //    /**
 //     * @return Subida[] Returns an array of Subida objects

@@ -60,21 +60,51 @@
                     arrow_back
                     </span></a>
                 <h1 class="rosa text-center"><strong>{{ entrega.nombre }}</strong></h1>
-                <p class="text-secondary">Fecha de entrega: {{ entrega.fechaEntrega|date('Y-m-d H:i') }}</p>
+                <p class="rosa">Fecha de entrega: <strong>{{ entrega.fechaEntrega|date('Y-m-d H:i') }}</strong></p>
 
                 {{ form_start(formArchivo) }}
+
                     {{ form_row(formArchivo.file, {
-                        'label': 'Archivo',
+                        'label': 'Archivo:',
                         'attr': {
                             'class': 'form-control',
                             'data-title': 'Seleccionar foto'
                         }
                     }) }}
                     {{ form_row(formArchivo.guardar, {
-                        'label': 'Guardar',
+                        'label': 'Enviar',
                         'attr': {'class': 'btn btn-primary mt-2'}
                     }) }}
+
                 {{ form_end(formArchivo) }}
+
+                {# Mostrar la hora de envío de la última subida si existe #}
+                {% if latestSubida is not null and latestSubida.entrega.id == entrega.id and latestSubida.user.id == app.user.id %}
+                    <p>Hora de envío de la última subida: {{ latestSubida.fechaSubida|date('Y-m-d H:i') }}</p>
+
+                    <p>Para enviar alguna corrección, volver a enviar el archivo dentro del plazo.</p>
+                    
+                    {# Calcular la diferencia de tiempo entre latestSubida y fechaEntrega #}
+                    {% set diff = latestSubida.fechaSubida|date('U') - entrega.fechaEntrega|date('U') %}
+                    
+                    {# Obtener los componentes de la diferencia de tiempo #}
+                     {% set days = diff / (60 * 60 * 24) %}
+                    {% set hours = (diff % (60 * 60 * 24)) / (60 * 60) %}
+                    {% set minutes = (diff % (60 * 60)) / 60 %}
+                    {% set seconds = diff % 60 %}
+
+                    {# Imprimir la diferencia de tiempo en formato legible #}
+                    {% if diff > 0 %}
+                        <p class="text-danger">Tarea entregada {{ days|number_format }} días, {{ hours|number_format }} horas, {{ minutes|number_format }} minutos y {{ seconds|number_format }} segundos tarde.</p>
+                    {% else %}
+                        <p class="text-success">Tarea entregada a tiempo.</p>
+                    {% endif %}
+                {% else %}
+                    <p>No has enviado ninguna tarea.</p>
+                {% endif %}
+
+                
+
                 
             </div>
         </div>
