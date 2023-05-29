@@ -28,8 +28,8 @@ class Subida
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?float $nota = null;
+    #[ORM\OneToOne(targetEntity: Nota::class, mappedBy: 'subida', cascade: ['persist', 'remove'])]
+    private $nota;
 
     public function getId(): ?int
     {
@@ -84,15 +84,21 @@ class Subida
         return $this;
     }
 
-    public function getNota(): ?float
+    public function getNota(): ?Nota
     {
         return $this->nota;
     }
 
-    public function setNota(?float $nota): self
+    public function setNota(?Nota $nota): self
     {
         $this->nota = $nota;
 
+        // set (or unset) the owning side of the relation if necessary
+        if ($nota !== null && $nota->getSubida() !== $this) {
+            $nota->setSubida($this);
+        }
+
         return $this;
     }
+
 }

@@ -1,0 +1,18 @@
+{# templates/nota/asignar_nota.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Asignar Nota
+{% endblock %}
+
+{% block body %}
+    <h1>Asignar Nota</h1>
+
+    <p>Subida: {{ subida.id }}</p>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button type="submit">Asignar Nota</button>
+    {{ form_end(form) }}
+{% endblock %}

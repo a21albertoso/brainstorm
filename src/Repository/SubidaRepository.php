@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Entrega;
 use App\Entity\Subida;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -40,16 +41,19 @@ class SubidaRepository extends ServiceEntityRepository
         }
     }
 
-    public function findLatestSubidaByUser(User $user)
+    public function findLatestSubidaByUserAndEntrega(User $user, Entrega $entrega)
 {
     return $this->createQueryBuilder('s')
         ->andWhere('s.user = :user')
+        ->andWhere('s.entrega = :entrega')
         ->orderBy('s.fecha_subida', 'DESC')
         ->setMaxResults(1)
         ->setParameter('user', $user)
+        ->setParameter('entrega', $entrega)
         ->getQuery()
         ->getOneOrNullResult();
 }
+
 
 //    /**
 //     * @return Subida[] Returns an array of Subida objects

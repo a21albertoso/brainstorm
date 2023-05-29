@@ -62,6 +62,18 @@
                 <h1 class="rosa text-center"><strong>{{ entrega.nombre }}</strong></h1>
                 <p class="rosa">Fecha de entrega: <strong>{{ entrega.fechaEntrega|date('Y-m-d H:i') }}</strong></p>
 
+                {% if is_granted('ROLE_ADMIN') %}
+                    {% for subidaEntrega in subidasEntrega %}
+                        {% if subidaEntrega.file %}
+                            <a class="link nav-link" href="{{ asset('uploads/archivos/' ~ subidaEntrega.file) }}">Entrega: {{ subidaEntrega.file }}</a> - <a href="{{ path('newnota', {'id': subidaEntrega.id}) }}">Asignar Nota</a>
+                        {% endif %}
+                        </br></br></br>
+                    {% endfor %}
+                {% endif %}
+
+                {# para que esta parte solo sea visible para los alumnos, dado a que es para entregar los archivos #}
+                {% if is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') %}
+
                 {{ form_start(formArchivo) }}
 
                     {{ form_row(formArchivo.file, {
@@ -79,7 +91,7 @@
                 {{ form_end(formArchivo) }}
 
                 {# Mostrar la hora de envío de la última subida si existe #}
-                {% if latestSubida is not null and latestSubida.entrega.id == entrega.id and latestSubida.user.id == app.user.id %}
+                    {% if latestSubida is not null and latestSubida.entrega == entrega and latestSubida.user == app.user %}
                     <p>Hora de envío de la última subida: {{ latestSubida.fechaSubida|date('Y-m-d H:i') }}</p>
 
                     <p>Para enviar alguna corrección, volver a enviar el archivo dentro del plazo.</p>
@@ -101,6 +113,8 @@
                     {% endif %}
                 {% else %}
                     <p>No has enviado ninguna tarea.</p>
+                {% endif %}
+
                 {% endif %}
 
                 

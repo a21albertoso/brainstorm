@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Asignatura;
 use App\Entity\Entrega;
+use App\Entity\Nota;
 use App\Entity\Subida;
 use App\Form\EntregaType;
 use App\Form\SubidaType;
@@ -12,18 +13,21 @@ use App\Repository\SubidaRepository;
 use App\Service\ColorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Form\NotaType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+
 
 class EntregaController extends AbstractController
 {
@@ -74,7 +78,7 @@ class EntregaController extends AbstractController
         $user = $this->getUser();
 
     // Obtener la última subida del usuario
-        $latestSubida = $subidaRepository->findLatestSubidaByUser($user);
+    $latestSubida = $subidaRepository->findLatestSubidaByUserAndEntrega($user, $entrega);
 
     
         $formArchivo = $this->createForm(SubidaType::class, $subida);
@@ -119,8 +123,11 @@ class EntregaController extends AbstractController
 
         }
 
-    $randomColor = $this->colorService->getRandomColor();
 
+    // para las descargas.
+    $subidasEntrega = $subidaRepository->findBy(['entrega' => $entrega]);
+
+    $randomColor = $this->colorService->getRandomColor();
 
     return $this->render('entrega/entrega.html.twig', [
         'entrega' => $entrega,
@@ -128,39 +135,9 @@ class EntregaController extends AbstractController
         'subida' => $subida,
         'latestSubida' => $latestSubida,
         'formArchivo' => $formArchivo->createView(),
+        'subidasEntrega' => $subidasEntrega, // Pasar las subidas a la plantilla
     ]);
 }
-
-// $user = $this->getUser(); // Obtener el usuario actualmente autenticado
-//         $form = $this->createForm(FotoType::class);
-//         $form->handleRequest($request);
-    
-//         if ($form->isSubmitted() && $form->isValid()) {
-//             $foto = $form->get('foto')->getData();
-    
-//             if ($foto) {
-//                 $originalFilename = pathinfo($foto->getClientOriginalName(), PATHINFO_FILENAME);
-//                 $safeFilename = $slugger->slug($originalFilename);
-//                 $newFilename = $safeFilename.'-'.uniqid().'.'.$foto->guessExtension();
-    
-//                 try {
-//                     $foto->move(
-//                         $this->getParameter('fotos_directory'),
-//                         $newFilename
-//                     );
-//                 } catch (FileException $e) {
-//                     throw new \Exception("Hay un problema con tu foto de perfil");
-//                 }
-    
-//                 $user->setFoto($newFilename);
-//             }
-    
-//             $entityManager = $this->doctrine->getManager();
-//             $entityManager->persist($user);
-//             $entityManager->flush();
-    
-//             return $this->redirectToRoute('info');
-//         }
-
     
 }
+
