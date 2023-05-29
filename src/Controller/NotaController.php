@@ -13,9 +13,14 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class NotaController extends AbstractController
 {
-    #[Route('/principal/newnota/{id}', name: 'newnota', methods: ["GET"])]
-    public function asignarNota(ManagerRegistry $doctrine, Request $request, Subida $subida, Entrega $entrega, $id)
+    #[Route('/principal/newnota/{id}', name: 'newnota', methods: ['GET', 'POST'])]
+    public function asignarNota(ManagerRegistry $doctrine, Request $request, $id)
     {
+        $entityManager = $doctrine->getManager();
+        
+        // Obtener la entidad Subida por ID
+        $subida = $entityManager->getRepository(Subida::class)->find($id);
+
         // Verificar si la subida existe
         if (!$subida) {
             throw $this->createNotFoundException('La subida no existe.');
@@ -35,12 +40,11 @@ class NotaController extends AbstractController
             $nota->setSubida($subida);
 
             // Guardar la nota en la base de datos
-            $entityManager = $doctrine->getManager();
             $entityManager->persist($nota);
             $entityManager->flush();
 
             // Redirigir a la página de la subida o a donde desees
-            return $this->redirectToRoute('entrega', ['id' => $entrega->getId()]);
+            return $this->redirectToRoute('entrega', ['id' => $subida->getEntrega()->getId()]);
         }
 
         return $this->render('entrega/newnota.html.twig', [

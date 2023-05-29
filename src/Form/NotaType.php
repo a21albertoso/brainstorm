@@ -15,11 +15,11 @@ class NotaType extends AbstractType
     {
         $builder
             ->add('numero', NumberType::class, [
-                'label' => 'Nota',
+                'label' => 'Nota:',
                 'required' => true,
             ])
             ->add('guardar', SubmitType::class, [
-                'label' => 'Guardar',
+                'label' => 'Asignar Nota',
                 'attr' => [
                     'class' => 'btn btn-primary mt-2'
                 ]

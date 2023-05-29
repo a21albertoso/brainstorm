@@ -1,5 +1,3 @@
-{# templates/nota/asignar_nota.html.twig #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}
@@ -7,12 +5,15 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Asignar Nota</h1>
+    <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+        <div style="background-color: white; padding: 20px; border: 1px solid black; border-radius: 20px; text-align: center;">
+            <h1 class="rosa">Asignar Nota</h1>
 
-    <p>Subida: {{ subida.id }}</p>
+            <p class="rosa">Nota de la entrega <strong>{{ subida.entrega.nombre }}</strong> del usuario <strong>{{ subida.user.email }}</strong></p>
 
-    {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button type="submit">Asignar Nota</button>
-    {{ form_end(form) }}
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            {{ form_end(form) }}
+        </div>
+    </div>
 {% endblock %}

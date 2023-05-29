@@ -67,6 +67,18 @@
                         {% if subidaEntrega.file %}
                             <a class="link nav-link" href="{{ asset('uploads/archivos/' ~ subidaEntrega.file) }}">Entrega: {{ subidaEntrega.file }}</a> - <a href="{{ path('newnota', {'id': subidaEntrega.id}) }}">Asignar Nota</a>
                         {% endif %}
+
+                         {% if subidaEntrega.nota %}
+                            <span class="nota">
+                               {% if subidaEntrega.nota.numero >= 5 %}
+                                    Aprobado
+                                {% else %}
+                                    Suspendido
+                                {% endif %}
+                                (Nota: {{ subidaEntrega.nota.numero }})
+                            </span>
+                        {% endif %}
+
                         </br></br></br>
                     {% endfor %}
                 {% endif %}
