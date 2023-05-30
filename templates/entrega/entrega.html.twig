@@ -81,7 +81,13 @@
 
                         </br></br></br>
                     {% endfor %}
+                    {# Mostrar la nota media #}
+                    {% if subidasEntrega|length > 0 %}
+                        <p>Nota media: {{ notaMedia }}</p>
+                    {% endif %}
                 {% endif %}
+
+                
 
                 {# para que esta parte solo sea visible para los alumnos, dado a que es para entregar los archivos #}
                 {% if is_granted('ROLE_USER') and not is_granted('ROLE_ADMIN') %}
@@ -97,7 +103,7 @@
                     }) }}
                     {{ form_row(formArchivo.guardar, {
                         'label': 'Enviar',
-                        'attr': {'class': 'btn btn-primary mt-2'}
+                        'attr': {'class': 'btn btn-primary mt-2 mb-2'}
                     }) }}
 
                 {{ form_end(formArchivo) }}
@@ -123,10 +129,20 @@
                     {% else %}
                         <p class="text-success">Tarea entregada a tiempo.</p>
                     {% endif %}
-                {% else %}
-                    <p>No has enviado ninguna tarea.</p>
-                {% endif %}
+                        {% if nota %}
+                            <span class="nota">
+                                {% if nota.numero >= 5 %}
+                                    Aprobado
+                                {% else %}
+                                    Suspendido
+                                {% endif %}
+                                (Nota: {{ nota.numero }})
+                            </span>
+                        {% endif %}
 
+                    {% else %}
+                        <p>No has enviado ninguna tarea.</p>
+                    {% endif %}
                 {% endif %}
 
                 

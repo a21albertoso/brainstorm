@@ -25,7 +25,7 @@
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item dropdown">
                          <a class="nav-link dropdown-toggle d-flex align-items-center ms-2" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {% if app.user.foto is not null %}
+                            {% if app.user.foto is not null %} {# función para que el usuario tenga una foto de perfíl o por defecto se le ponga una como en una cuenta de google (se repite en todos los navbar) #}
                                 <img src="{{ asset('uploads/fotos/' ~ app.user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 40px; height: 40px;">
                             {% else %}
                                 <div class="rounded-circle" style="width: 40px; height: 40px; background-color: {{ randomColor }}; text-align: center; line-height: 40px; color: #fff; font-weight: bold;">
@@ -73,6 +73,8 @@
 
         {% if 'ROLE_ADMIN' in app.user.roles %}
             <a class="align-self-center nav-link azul mx-auto" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+
+            <a class="align-self-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
         {% endif %}
     </ul>
 </div>
@@ -85,7 +87,7 @@
                         <h1 class="rosa text-center"><strong>Tareas Pendientes:</strong></h1>
                     </li>
                     <li class="nav-item m-5">
-                        {% set numeroEntregas = 0 %}
+                        {% set numeroEntregas = 0 %} {# el array ya lo defino aquí porque no tiene ninguna utilidad relevante en la base de datos #}
                         {% for asignatura in userAsignaturas %}
                             {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
                             {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}

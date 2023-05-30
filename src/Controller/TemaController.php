@@ -38,10 +38,14 @@ class TemaController extends AbstractController
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            
             $usuario = $security->getUser();
             $tema->setUser($usuario);
+
             $asignatura = $entityManager->getRepository(Asignatura::class)->find($id);
+
             $tema->setAsignatura($asignatura);
+
             $entityManager->persist($tema);
             $entityManager->flush();
 

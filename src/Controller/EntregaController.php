@@ -80,6 +80,14 @@ class EntregaController extends AbstractController
     // Obtener la última subida del usuario
     $latestSubida = $subidaRepository->findLatestSubidaByUserAndEntrega($user, $entrega);
 
+    $latestNota = $subidaRepository->findLatestSubidaByUserAndEntrega($user, $entrega);
+
+            $nota = null;
+        if ($latestNota && $latestNota->getUser() === $user) {
+            $nota = $latestNota->getNota();
+        }
+
+
     
         $formArchivo = $this->createForm(SubidaType::class, $subida);
         $formArchivo->handleRequest($request);
@@ -123,9 +131,13 @@ class EntregaController extends AbstractController
 
         }
 
+        
+
 
     // para las descargas.
     $subidasEntrega = $subidaRepository->findBy(['entrega' => $entrega]);
+
+    $notaMedia = 0;
 
     $randomColor = $this->colorService->getRandomColor();
 
@@ -136,6 +148,9 @@ class EntregaController extends AbstractController
         'latestSubida' => $latestSubida,
         'formArchivo' => $formArchivo->createView(),
         'subidasEntrega' => $subidasEntrega, // Pasar las subidas a la plantilla
+        'nota' => $nota,
+        'latestNota' => $latestNota,
+        'notaMedia' => $notaMedia, // Pasar la nota media al template
     ]);
 }
     
