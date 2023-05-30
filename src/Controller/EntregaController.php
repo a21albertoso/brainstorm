@@ -14,6 +14,7 @@ use App\Service\ColorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use App\Form\NotaType;
+use App\Repository\AsignaturaRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -40,7 +41,7 @@ class EntregaController extends AbstractController
     }
 
     #[Route('/principal/newentrega/{id}', name: 'newentrega', methods: ['GET', 'POST'])]
-    public function nuevaEntrega(Security $security, Request $request, EntityManagerInterface $entityManager, $id): Response
+    public function nuevaEntrega(AsignaturaRepository $asignaturaRepository, Security $security, Request $request, EntityManagerInterface $entityManager, $id): Response
     {
         $entrega = new Entrega();
 
@@ -54,7 +55,7 @@ class EntregaController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $usuario = $security->getUser();
             $entrega->setUser($usuario);
-            $asignatura = $entityManager->getRepository(Asignatura::class)->find($id);
+            $asignatura = $asignaturaRepository->find($id);
             $entrega->setAsignatura($asignatura);
             $entityManager->persist($entrega);
             $entityManager->flush();
@@ -71,7 +72,6 @@ class EntregaController extends AbstractController
     public function entrega(ManagerRegistry $doctrine, SluggerInterface $slugger, SessionInterface $session, Security $security, Request $request, EntregaRepository $entregaRepository, SubidaRepository $subidaRepository, EntityManagerInterface $entityManager, $id): Response
     {
         $entrega = $entregaRepository->find($id);
-        $subidas = $subidaRepository->findAll();
         $subida = new Subida();
 
 

@@ -62,20 +62,8 @@
             {% for entrega in entregasPorAsignatura[asignatura.id] %}
                 <a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">ENTREGA: {{ entrega.nombre }}</a>
             {% endfor %}
-
-            {% if 'ROLE_ADMIN' in app.user.roles %}
-                <a class="align-self-center nav-link azul mb-2 mt-2" href="{{ path('newtema', {'id': asignatura.id}) }}">Crear Tema</a>
-            {% endif %}
-            {% if 'ROLE_ADMIN' in app.user.roles %}
-                <a class="align-self-center nav-link azul mb-2 mt-2" href="{{ path('newentrega', {'id': asignatura.id}) }}">Crear Entrega</a>
-            {% endif %}
         {% endfor %}
 
-        {% if 'ROLE_ADMIN' in app.user.roles %}
-            <a class="align-self-center nav-link azul mx-auto" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
-
-            <a class="align-self-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
-        {% endif %}
     </ul>
 </div>
 
@@ -109,7 +97,12 @@
             <div class="col-md-2 mx-auto m-5 bg-white calendario">
                 <ul class="nav flex-column">
                     <li class="nav-item">
-                        <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p>
+                        {# <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p> #}
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                            <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+
+                            <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>

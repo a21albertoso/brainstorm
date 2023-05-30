@@ -51,7 +51,12 @@
                 <ul class="nav flex-column">
                     {# próximamente aquí tengo pensado incluir un calendario #}
                     <li class="nav-item">
-                        <p class="m-5 text-center"><a class="nav nav-link rosa" href="#">Calendario</a></p>
+                        {# <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p> #}
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                            <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+
+                            <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>
@@ -68,12 +73,19 @@
                     {% for tema in temas %}
                         <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
                         <a class="text-center nav-link rosa mb-3" href="{{ path('tema', {id: tema.id}) }}"><strong> TEMA {{ loop.index }}: {{ tema.nombre }} </strong></a>
+                        <a href="{{ path('asignatura', { 'id': asignatura.id, 'erasetema': tema.id }) }}" onclick="return confirm('¿Estás seguro de que deseas eliminar este tema?');" class="btn align-self-center btn-danger btn-sm">Eliminar</a>
                     {% endfor %}
 
                     {% for entrega in entregas %}
                         <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
                         <a class="text-center nav-link rosa mb-3" href="{{ path('entrega', {id: entrega.id}) }}"><strong> ENTREGA: {{ entrega.nombre }} </strong></a>
                     {% endfor %}
+
+                {% if 'ROLE_ADMIN' in app.user.roles %}
+                    <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
+                    <a class="btn align-self-center btn-secondary btn-sm mb-3" href="{{ path('newtema', {'id': asignatura.id}) }}">Crear Tema</a>
+                    <a class="btn align-self-center btn-secondary btn-sm mb-3" href="{{ path('newentrega', {'id': asignatura.id}) }}">Crear Entrega</a>
+                {% endif %}
                 </ul>
             </div>
         </div>

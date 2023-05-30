@@ -24,6 +24,8 @@ class TemaController extends AbstractController
         $this->colorService = $colorService;
     }
 
+    //mostrar información dentro del tema.
+
     #[Route('/principal/newtema/{id}', name: 'newtema', methods: ['GET', 'POST'])]
 
     public function nuevoTema(Security $security, Request $request, EntityManagerInterface $entityManager, $id): Response
@@ -58,7 +60,7 @@ class TemaController extends AbstractController
     }
 
 
-
+    //crear un nuevo tema
 
 
     #[Route('principal/tema/{id}', name: 'tema')]
@@ -75,7 +77,5 @@ class TemaController extends AbstractController
             'randomColor' => $randomColor,
         ]);
     }
-
-
 
 }

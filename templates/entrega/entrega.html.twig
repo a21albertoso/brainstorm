@@ -51,7 +51,12 @@
                 <ul class="nav flex-column">
                     {# próximamente aquí tengo pensado incluir un calendario #}
                     <li class="nav-item">
-                        <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p>
+                        {# <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p> #}
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                            <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+
+                            <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
+                        {% endif %}
                     </li>
                 </ul>
             </div>

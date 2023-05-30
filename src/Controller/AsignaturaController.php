@@ -5,9 +5,11 @@ namespace App\Controller;
 use App\Entity\Asignatura;
 use App\Entity\Entrega;
 use App\Entity\Tema;
+use App\Repository\TemaRepository;
 use App\Service\ColorService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -23,7 +25,7 @@ class AsignaturaController extends AbstractController
     }
 
     #[Route('principal/asignatura/{id}', name: 'asignatura')]
-    public function show(AuthenticationUtils $authenticationUtils, $id)
+    public function show(TemaRepository $temaRepository, Request $request, AuthenticationUtils $authenticationUtils, $id)
     {
         // Obtener la asignatura por ID
         $asignatura = $this->em->getRepository(Asignatura::class)->find($id);
@@ -33,11 +35,24 @@ class AsignaturaController extends AbstractController
         }
 
         // Obtener los temas de la asignatura
-        $temas = $this->em->getRepository(Tema::class)->findBy(['asignatura' => $asignatura]);
-        $entregas = $this->em->getRepository(Entrega::class)->findBy(['asignatura' => $asignatura]);
+        $temas = $temaRepository->findBy(['asignatura' => $asignatura]);
+        $entregas = $temaRepository->findBy(['asignatura' => $asignatura]);
 
         //correo del usuario
         $lastUsername = $authenticationUtils->getLastUsername();
+
+        // enlaces para eliminar temas
+        if ($request->query->has('borrartema')) { //el error era porque tenía boraar
+            $temaId = $request->query->get('borrartema');
+            $tema = $temaRepository->find($temaId);
+
+            if ($tema) {
+                $this->em->remove($tema);
+                $this->em->flush();
+            }
+
+            return $this->redirectToRoute('asignatura', ['id' => $id]);
+        }
 
         $randomColor = $this->colorService->getRandomColor();
 
