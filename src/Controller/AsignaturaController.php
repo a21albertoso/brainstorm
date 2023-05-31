@@ -5,9 +5,12 @@ namespace App\Controller;
 use App\Entity\Asignatura;
 use App\Entity\Entrega;
 use App\Entity\Tema;
+use App\Form\AsignaturaType;
+use App\Repository\EntregaRepository;
 use App\Repository\TemaRepository;
 use App\Service\ColorService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -25,7 +28,7 @@ class AsignaturaController extends AbstractController
     }
 
     #[Route('principal/asignatura/{id}', name: 'asignatura')]
-    public function show(TemaRepository $temaRepository, Request $request, AuthenticationUtils $authenticationUtils, $id)
+    public function show(EntregaRepository $entregaRepository, TemaRepository $temaRepository, Request $request, AuthenticationUtils $authenticationUtils, $id)
     {
         // Obtener la asignatura por ID
         $asignatura = $this->em->getRepository(Asignatura::class)->find($id);
@@ -36,7 +39,7 @@ class AsignaturaController extends AbstractController
 
         // Obtener los temas de la asignatura
         $temas = $temaRepository->findBy(['asignatura' => $asignatura]);
-        $entregas = $temaRepository->findBy(['asignatura' => $asignatura]);
+        $entregas = $entregaRepository->findBy(['asignatura' => $asignatura]);
 
         //correo del usuario
         $lastUsername = $authenticationUtils->getLastUsername();
@@ -63,6 +66,28 @@ class AsignaturaController extends AbstractController
             'entregas' => $entregas,
             'last_username' => $lastUsername,
             'randomColor' => $randomColor,
+        ]);
+    }
+
+    #[Route('/asignatura/nueva', name: 'newasignatura', methods: ['GET', 'POST'])]
+    public function new(ManagerRegistry $doctrine, Request $request)
+    {
+        $asignatura = new Asignatura();
+
+        $form = $this->createForm(AsignaturaType::class, $asignatura);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($asignatura);
+            $entityManager->flush();
+
+            // Redirigir a la página principal u otra página relevante
+            return $this->redirectToRoute('homepage');
+        }
+
+        return $this->render('asignatura/newasignatura.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }

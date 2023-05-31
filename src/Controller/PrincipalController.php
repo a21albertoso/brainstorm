@@ -7,6 +7,8 @@ use App\Entity\Tema;
 use App\Entity\User;
 use App\Entity\Entrega;
 use App\Form\FotoType;
+use App\Repository\EntregaRepository;
+use App\Repository\SubidaRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -44,13 +46,24 @@ class PrincipalController extends AbstractController{
     }
     
     #[Route(path: '/principal/{id}', name: 'principal', methods: ["GET"])]
-    public function index(ColorService $colorService ,Security $security, AuthenticationUtils $authenticationUtils, $id = null){
+    public function index(SubidaRepository $subidaRepository, EntregaRepository $entregaRepository, Security $security, AuthenticationUtils $authenticationUtils, $id = null){
 
         // Obtener el usuario autenticado
         $user = $security->getUser();
         
         // Si el usuario está autenticado, obtén su ID
         $userAsignaturas = $user ? $user->getAsignaturas() : [];
+
+        $entregasPendientes = [];
+    foreach ($user->getAsignaturas() as $asignatura) {
+        $entregasAsignatura = $entregaRepository->findBy(['asignatura' => $asignatura]);
+        foreach ($entregasAsignatura as $entrega) {
+            $subida = $subidaRepository->findSubidaByUserAndEntrega($user, $entrega);
+            if (!$subida) {
+                $entregasPendientes[] = $entrega;
+            }
+        }
+    }
 
         $entregasPorAsignatura = [];
         foreach ($userAsignaturas as $asignatura) {
@@ -89,6 +102,7 @@ class PrincipalController extends AbstractController{
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('principal/principal.html.twig',[
+            'user' => $user,
             'asignaturas' => $asignaturas,
             'temas' => $temas,
             'entregas' => $entregaspacontar,
@@ -98,6 +112,7 @@ class PrincipalController extends AbstractController{
             'entregasPorAsignatura' => $entregasPorAsignatura,
             'temasPorAsignatura' => $temasPorAsignatura,
             'randomColor' => $randomColor,
+            'entregasPendientes' => $entregasPendientes,
         ]);
 
     }

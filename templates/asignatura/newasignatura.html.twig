@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Nueva Asignatura
+{% endblock %}
+
+{% block body %}
+    <h1>Crear una nueva asignatura</h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.nombre) }}
+    {{ form_row(form.guardar) }}
+    {{ form_end(form) }}
+
+    
+{% endblock %}

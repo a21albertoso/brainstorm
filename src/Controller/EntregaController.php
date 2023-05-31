@@ -108,7 +108,7 @@ class EntregaController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    throw new \Exception("Hay un problema con tu foto de perfil");
+                    throw new \Exception("Hay un problema con tu archivo");
                 }
     
                 $subida->setFile($newFilename);

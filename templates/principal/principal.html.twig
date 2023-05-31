@@ -71,11 +71,13 @@
 
             <div class="col-md-6 m-5 mx-auto bg-white">
                 <ul class="nav flex-column">
+                {% if 'ROLE_ADMIN' in app.user.roles %}
                     <li class="nav-item">
-                        <h1 class="rosa text-center"><strong>Tareas Pendientes:</strong></h1>
+                        <h1 class="rosa text-center"><strong>Tareas para Correccciones:</strong></h1>
                     </li>
                     <li class="nav-item m-5">
-                        {% set numeroEntregas = 0 %} {# el array ya lo defino aquí porque no tiene ninguna utilidad relevante en la base de datos #}
+                    {# el array ya lo defino aquí porque no tiene ninguna utilidad relevante en la base de datos #}
+                        {% set numeroEntregas = 0 %} 
                         {% for asignatura in userAsignaturas %}
                             {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
                             {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
@@ -88,24 +90,59 @@
                         {% endfor %}
 
                         {% if numeroEntregas == 0 %}
-                            <h3 class="azul text-center">No hay tareas pendientes</h3>
+                            <h3 class="azul text-center">No hay tareas impuestas</h3>
                         {% endif %}
-                    </li>
-                </ul>
-            </div>
+                    {% endif %}
 
-            <div class="col-md-2 mx-auto m-5 bg-white calendario">
-                <ul class="nav flex-column">
+                    {% if 'ROLE_USER' in app.user.roles and not is_granted('ROLE_ADMIN') %}
                     <li class="nav-item">
-                        {# <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p> #}
-                        {% if 'ROLE_ADMIN' in app.user.roles %}
-                            <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+                        <h1 class="rosa text-center"><strong>Tareas Pendientes:</strong></h1>
+                    </li>
+                    <li class="nav-item m-5">
+                        {% set numeroEntregas = 0 %}
+                            {% for asignatura in userAsignaturas %}
+                                {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
+                                {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
 
-                            <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
+                                {% if entregasAsignatura|length > 0 %}
+                                    {% for entrega in entregasAsignatura %}
+                                        {% set subidaEncontrada = false %}
+                                        {% for subida in entrega.subidas %}
+                                            {% if subida.user == user %}
+                                                {% set subidaEncontrada = true %}
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if not subidaEncontrada %}
+                                            <h2 class="text-center"><a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a></h2>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if numeroEntregas == 0 %}
+                                <h3 class="azul text-center">No hay tareas pendientes</h3>
+                            {% endif %}
                         {% endif %}
                     </li>
                 </ul>
             </div>
+            {% if 'ROLE_ADMIN' in app.user.roles %}
+                <div class="col-md-2 mx-auto m-5 bg-white calendario">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            {# <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p> #}
+
+                                <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+
+                                <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
+                            
+                                <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('newasignatura') }}">Registrar nueva asignatura</a>
+
+                        </li>
+                    </ul>
+                </div>
+            {% endif %}
         </div>
     </div>
 

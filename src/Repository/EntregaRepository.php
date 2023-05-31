@@ -38,6 +38,8 @@ class EntregaRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+    
+
 
 //    /**
 //     * @return Entrega[] Returns an array of Entrega objects

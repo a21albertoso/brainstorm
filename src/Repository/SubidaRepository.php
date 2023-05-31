@@ -54,6 +54,17 @@ class SubidaRepository extends ServiceEntityRepository
         ->getOneOrNullResult();
 }
 
+public function findSubidaByUserAndEntrega($user, $entrega)
+    {
+        return $this->createQueryBuilder('s')
+            ->andWhere('s.user = :user')
+            ->andWhere('s.entrega = :entrega')
+            ->setParameter('user', $user)
+            ->setParameter('entrega', $entrega)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
 
 //    /**
 //     * @return Subida[] Returns an array of Subida objects
