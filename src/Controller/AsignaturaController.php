@@ -27,7 +27,7 @@ class AsignaturaController extends AbstractController
         $this->colorService = $colorService;
     }
 
-    #[Route('principal/asignatura/{id}', name: 'asignatura')]
+    #[Route('/principal/asignatura/{id}', name: 'asignatura')]
     public function show(EntregaRepository $entregaRepository, TemaRepository $temaRepository, Request $request, AuthenticationUtils $authenticationUtils, $id)
     {
         // Obtener la asignatura por ID
@@ -69,7 +69,7 @@ class AsignaturaController extends AbstractController
         ]);
     }
 
-    #[Route('/asignatura/nueva', name: 'newasignatura', methods: ['GET', 'POST'])]
+    #[Route('/principal/newasignatura', name: 'newasignatura', methods: ['GET', 'POST'])]
     public function new(ManagerRegistry $doctrine, Request $request)
     {
         $asignatura = new Asignatura();
@@ -83,7 +83,7 @@ class AsignaturaController extends AbstractController
             $entityManager->flush();
 
             // Redirigir a la página principal u otra página relevante
-            return $this->redirectToRoute('homepage');
+            return $this->redirectToRoute('principal');
         }
 
         return $this->render('asignatura/newasignatura.html.twig', [
