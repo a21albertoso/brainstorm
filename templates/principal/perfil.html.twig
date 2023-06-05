@@ -33,6 +33,11 @@
                             {{ form_widget(form.foto) }}
                             {{ form_widget(form.guardar) }}
                             {{ form_end(form) }}
+                            {% if app.user.foto is not null %}
+                                <form action="{{ path('erasefoto') }}" method="post">
+                                    <button type="submit" class="btn btn-danger mt-2">Eliminar foto</button>
+                                </form>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="mt-5 text-center">

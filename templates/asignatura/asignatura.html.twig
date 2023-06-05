@@ -9,7 +9,7 @@
     <div class="container-fluid">
        <nav class="navbar mx-auto navbar-expand-md navbar-light bg-white">
 
-                 <h3 class="optimo rosa mx-auto ms-3 d-none d-md-inline" style="position: absolute; left: 50%; transform: translateX(-50%);" href="#">
+                 <h3 class="optimo rosa mx-auto ms-3 d-none d-md-inline titulo" href="#">
                 Brainstorm Boulevard
             </h3>
             <span class="d-inline d-md-none">
@@ -29,7 +29,7 @@
                             {% if app.user.foto is not null %}
                                 <img src="{{ asset('uploads/fotos/' ~ app.user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 40px; height: 40px;">
                             {% else %}
-                                <div class="rounded-circle" style="width: 40px; height: 40px; background-color: {{ randomColor }}; text-align: center; line-height: 40px; color: #fff; font-weight: bold;">
+                                <div class="rounded-circle perfildefecto" style="background-color: {{ randomColor }};">
                                     {{ app.user.email|first|upper }}
                                 </div>
                             {% endif %}
@@ -76,7 +76,9 @@
                     {% for tema in temas %}
                         <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
                         <a class="text-center nav-link rosa mb-3" href="{{ path('tema', {id: tema.id}) }}"><strong> TEMA {{ loop.index }}: {{ tema.nombre }} </strong></a>
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
                         <a href="{{ path('asignatura', { 'id': asignatura.id, 'erasetema': tema.id }) }}" onclick="return confirm('¿Estás seguro de que deseas eliminar este tema?');" class="btn align-self-center btn-danger btn-sm">Eliminar</a>
+                        {% endif %}
                     {% endfor %}
 
                     {% for entrega in entregas %}

@@ -82,7 +82,7 @@ class AsignaturaController extends AbstractController
             $entityManager->persist($asignatura);
             $entityManager->flush();
 
-            // Redirigir a la página principal u otra página relevante
+            // Redirigir a la página principal
             return $this->redirectToRoute('principal');
         }
 

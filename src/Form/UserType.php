@@ -1,9 +1,10 @@
 <?php
-
 namespace App\Form;
 
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -18,12 +19,20 @@ class UserType extends AbstractType
             ->add('email', EmailType::class, [
                 'label' => 'Email: ',
             ])
-            //->add('roles')
             ->add('password', PasswordType::class, [
                 'attr' => ['autocomplete' => 'new-password'],
                 'label' => 'Password: ',
             ])
-            //->add('asignaturas')
+            ->add('roles', ChoiceType::class, [
+                'label' => 'Administrator Role',
+                'required' => false,
+                'choices' => [
+                    'User' => 'ROLE_USER',
+                    'Admin' => 'ROLE_ADMIN',
+                ],
+                'expanded' => true,
+                'multiple' => true,
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'Register'
             ])

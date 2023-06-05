@@ -10,6 +10,7 @@ use App\Form\FotoType;
 use App\Repository\EntregaRepository;
 use App\Repository\SubidaRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,6 +21,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Validator\Constraints\Length;
 use App\Service\ColorService;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -46,7 +48,7 @@ class PrincipalController extends AbstractController{
     }
     
     #[Route(path: '/principal/{id}', name: 'principal', methods: ["GET"])]
-    public function index(SubidaRepository $subidaRepository, EntregaRepository $entregaRepository, Security $security, AuthenticationUtils $authenticationUtils, $id = null){
+    public function index(CacheItemPoolInterface $cache, SubidaRepository $subidaRepository, EntregaRepository $entregaRepository, Security $security, AuthenticationUtils $authenticationUtils, $id = null){
 
         // Obtener el usuario autenticado
         $user = $security->getUser();
@@ -158,6 +160,20 @@ class PrincipalController extends AbstractController{
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route(path: '/principal/usuario/erasefoto', name: 'erasefoto', methods: ['POST'])]
+public function removeFoto()
+{
+    $user = $this->getUser();
+    $user->setFoto(null);
+
+    $entityManager = $this->doctrine->getManager();
+    $entityManager->persist($user);
+    $entityManager->flush();
+
+    return $this->redirectToRoute('info');
+}
+
     
 
 

@@ -2,11 +2,14 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Security\LoginFormAuthenticator;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Security\Core\Security;
 
 class LoginController extends AbstractController
@@ -39,4 +42,6 @@ class LoginController extends AbstractController
     {
         return $this->redirectToRoute('login');
     }
+
+   
 }

@@ -26,23 +26,21 @@ class UserController extends AbstractController
         $registration_form = $this->createForm(UserType::class, $user);
         $registration_form->handleRequest($request);
 
-            if ($registration_form->isSubmitted() && $registration_form->isValid()) {
-                // Verificar y modificar la contraseña y el rol
-                $password = $user->getPassword();
-                if (substr($password, -9) === '_profesor') {
-                    $newPassword = substr($password, 0, -9);
-                    $user->setRoles(['ROLE_ADMIN']);
-                    $user->setPassword($newPassword);
-                } else {
-                    $user->setRoles(['ROLE_USER']);
-                }
-            
+        if ($registration_form->isSubmitted() && $registration_form->isValid()) {
+            $roles = $user->getRoles();
+            if (in_array('ROLE_ADMIN', $roles)) {
+                $roles = ['ROLE_ADMIN'];
+            } else {
+                $roles = ['ROLE_USER'];
+            }
+            $user->setRoles($roles);
+
             $plaintextPassword = $registration_form->get('password')->getData();
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $plaintextPassword
             );
-            
+
             $user->setPassword($hashedPassword);
             $this->em->persist($user);
             $this->em->flush();
