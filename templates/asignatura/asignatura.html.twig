@@ -84,6 +84,9 @@
                     {% for entrega in entregas %}
                         <p class="text-secondary text-center">- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -</p>
                         <a class="text-center nav-link rosa mb-3" href="{{ path('entrega', {id: entrega.id}) }}"><strong> ENTREGA: {{ entrega.nombre }} </strong></a>
+                        {% if 'ROLE_ADMIN' in app.user.roles %}
+                        <a href="{{ path('asignatura', { 'id': asignatura.id, 'eraseentrega': entrega.id }) }}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta entrega?');" class="btn align-self-center btn-danger btn-sm">Eliminar</a>
+                        {% endif %}
                     {% endfor %}
 
                 {% if 'ROLE_ADMIN' in app.user.roles %}

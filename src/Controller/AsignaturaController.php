@@ -45,12 +45,25 @@ class AsignaturaController extends AbstractController
         $lastUsername = $authenticationUtils->getLastUsername();
 
         // enlaces para eliminar temas
-        if ($request->query->has('borrartema')) { //el error era porque tenía boraar
-            $temaId = $request->query->get('borrartema');
+        if ($request->query->has('erasetema')) { //el error era porque tenía boraar
+            $temaId = $request->query->get('erasetema');
             $tema = $temaRepository->find($temaId);
 
             if ($tema) {
                 $this->em->remove($tema);
+                $this->em->flush();
+            }
+
+            return $this->redirectToRoute('asignatura', ['id' => $id]);
+        }
+
+        // enlaces para eliminar entregas
+        if ($request->query->has('eraseentrega')) { //el error era porque tenía boraar
+            $entregaId = $request->query->get('eraseentrega');
+            $entrega = $entregaRepository->find($entregaId);
+
+            if ($entrega) {
+                $this->em->remove($entrega);
                 $this->em->flush();
             }
 
@@ -90,4 +103,5 @@ class AsignaturaController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    
 }

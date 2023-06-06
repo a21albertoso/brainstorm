@@ -48,13 +48,18 @@
         <div class="row">
            <div class="col-md-2 m-5 d-flex mx-auto justify-content-center">
     <ul class="nav flex-column align-items-center">
-
+    {% if 'ROLE_ADMIN' in app.user.roles %}
+                <div class="card mb-3">
+                    
+                    <a class="align-self-center text-center nav-link underline-link azul mx-auto" href="{{ path('newasignatura') }}">Registrar nueva asignatura</a>
+                        
+                    </div>
+    {% endif %}
             {% for asignatura in userAsignaturas %}
                 <div class="card mb-3">
-                    <div class="card-header">{{ asignatura.nombre }}</div>
+                    <a class="rosa underline-link nav-link h2" href="{{ path('asignatura', {'id': asignatura.id}) }}"><strong>{{ asignatura.nombre }}</strong></a>
                     <div class="card-body">
-                        <a class="rosa nav-link h2" href="{{ path('asignatura', {'id': asignatura.id}) }}"><strong>{{ asignatura.nombre }}</strong></a>
-
+                        
                         {% for tema in temasPorAsignatura[asignatura.id] %}
                             <a class="rosa nav-link" href="{{ path('tema', {id: tema.id}) }}">TEMA {{ loop.index }}: {{ tema.nombre }}</a>
                         {% endfor %}
@@ -62,6 +67,7 @@
                         {% for entrega in entregasPorAsignatura[asignatura.id] %}
                             <a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">ENTREGA: {{ entrega.nombre }}</a>
                         {% endfor %}
+                        
                     </div>
                 </div>
             {% endfor %}
@@ -71,77 +77,78 @@
 
 
 
-            <div class="col-md-6 m-5 mx-auto bg-white">
-                <ul class="nav flex-column">
-                {% if 'ROLE_ADMIN' in app.user.roles %}
-                    <li class="nav-item">
-                        <h1 class="rosa text-center"><strong>Tareas para Correccciones:</strong></h1>
-                    </li>
-                    <li class="nav-item m-5">
-                    {# el array ya lo defino aquí porque no tiene ninguna utilidad relevante en la base de datos #}
-                        {% set numeroEntregas = 0 %} 
-                        {% for asignatura in userAsignaturas %}
-                            {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
-                            {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
-
-                            {% if entregasAsignatura|length > 0 %}
-                                {% for entrega in entregasAsignatura %}
-                                    <h2 class="text-center"><a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a></h2>
-                                {% endfor %}
-                            {% endif %}
-                        {% endfor %}
-
-                        {% if numeroEntregas == 0 %}
-                            <h3 class="azul text-center">No hay tareas impuestas</h3>
-                        {% endif %}
-                    {% endif %}
-
-                    {% if 'ROLE_USER' in app.user.roles and not is_granted('ROLE_ADMIN') %}
-                    <li class="nav-item">
-                        <h1 class="rosa text-center"><strong>Tareas Pendientes:</strong></h1>
-                    </li>
-                    <li class="nav-item m-5">
-                        {% set numeroEntregas = 0 %}
-                            {% for asignatura in userAsignaturas %}
-                                {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
-                                {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
-
-                                {% if entregasAsignatura|length > 0 %}
-                                    {% for entrega in entregasAsignatura %}
-                                        {% set subidaEncontrada = false %}
-                                        {% for subida in entrega.subidas %}
-                                            {% if subida.user == user %}
-                                                {% set subidaEncontrada = true %}
-                                            {% endif %}
-                                        {% endfor %}
-
-                                        {% if not subidaEncontrada %}
-                                            <h2 class="text-center"><a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a></h2>
-                                        {% endif %}
-                                    {% endfor %}
-                                {% endif %}
-                            {% endfor %}
-
-                            {# CAMBIAR PORQUE AL TENER ENTREGAS SUBIDAS Y ESTO EN BLANCO PARA EL ALUMNO NO SALE ESTO #}
-                            {% if numeroEntregas == 0 %}
-                                <h3 class="azul text-center">No hay tareas pendientes</h3>
-                            {% endif %}
-                        {% endif %}
-                    </li>
-                </ul>
-            </div>
+           <div class="col-md-6 m-5 mx-auto esquina">
+    <button class="dropdown-btn">Tareas</button>
+    <div class="dropdown-content show bg-white">
+        <ul class="nav flex-column">
             {% if 'ROLE_ADMIN' in app.user.roles %}
-                <div class="col-md-2 mx-auto m-5 bg-white calendario">
+            <li class="nav-item">
+                <h1 class="rosa text-center"><strong>Tareas para Correcciones:</strong></h1>
+            </li>
+            <li class="nav-item m-5">
+                {# el array ya lo defino aquí porque no tiene ninguna utilidad relevante en la base de datos #}
+                {% set numeroEntregas = 0 %}
+                {% for asignatura in userAsignaturas %}
+                {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
+                {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
+
+                {% if entregasAsignatura|length > 0 %}
+                {% for entrega in entregasAsignatura %}
+                <h2 class="text-center"><a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a></h2>
+                {% endfor %}
+                {% endif %}
+                {% endfor %}
+
+                {% if numeroEntregas == 0 %}
+                <h3 class="azul text-center">No hay tareas impuestas</h3>
+                {% endif %}
+            {% endif %}
+
+            {% if 'ROLE_USER' in app.user.roles and not is_granted('ROLE_ADMIN') %}
+            <li class="nav-item">
+                <h1 class="rosa text-center"><strong>Tareas Pendientes:</strong></h1>
+            </li>
+            <li class="nav-item m-5">
+                {% set numeroEntregas = 0 %}
+                {% for asignatura in userAsignaturas %}
+                {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
+                {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
+
+                {% if entregasAsignatura|length > 0 %}
+                {% for entrega in entregasAsignatura %}
+                {% set subidaEncontrada = false %}
+                {% for subida in entrega.subidas %}
+                {% if subida.user == user %}
+                {% set subidaEncontrada = true %}
+                {% endif %}
+                {% endfor %}
+
+                {% if not subidaEncontrada %}
+                <h2 class="text-center"><a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a></h2>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                {% endfor %}
+
+                {# CAMBIAR PORQUE AL TENER ENTREGAS SUBIDAS Y ESTO EN BLANCO PARA EL ALUMNO NO SALE ESTO #}
+                {% if numeroEntregas == 0 %}
+                <h3 class="azul text-center">No hay tareas pendientes</h3>
+                {% endif %}
+            {% endif %}
+            </li>
+        </ul>
+    </div>
+</div>
+
+            {% if 'ROLE_ADMIN' in app.user.roles %}
+                <div class="col-md-2 mx-auto m-5 bg-white card" style="height: 50%;">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            {# <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p> #}
+                            <p class="card-header text-center rosa">Menú para la matriculación de alumnos</p>
 
-                                <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+                            <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
 
-                                <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
-                            
-                                <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('newasignatura') }}">Registrar nueva asignatura</a>
-
+                            <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
                         </li>
                     </ul>
                 </div>
@@ -149,6 +156,88 @@
 
         </div>
     </div>
+
+    <style>
+.dropdown-content {
+    display: none;
+}
+
+.dropdown-content.show {
+    display: block;
+}
+
+.dropdown-btn {
+    background-color: #f1f1f1;
+    color: black;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    outline: none;
+}
+
+.dropdown-btn:hover {
+    background-color: #ddd;
+}
+
+.dropdown-btn:after {
+    content: '\25BC';
+    float: right;
+}
+
+.dropdown-btn.active:after {
+    content: '\25B2';
+}
+
+.dropdown-content a {
+    color: #8B4513; /* Color marrón */
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+.underline-link {
+        position: relative;
+        display: inline-block;
+        text-decoration: none;
+    }
+
+    .underline-link::before {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: #000; /* Color de subrayado */
+        transition: width 0.3s ease-in-out;
+    }
+
+    .underline-link:hover::before {
+        width: 100%;
+    }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    var dropdownBtn = document.querySelector(".dropdown-btn");
+    var dropdownContent = document.querySelector(".dropdown-content");
+
+    dropdownBtn.addEventListener("click", function() {
+        this.classList.toggle("active");
+        if (dropdownContent.style.display === "block") {
+            dropdownContent.style.display = "none";
+        } else {
+            dropdownContent.style.display = "block";
+        }
+    });
+});
+</script>
 
 
 {% endblock %}

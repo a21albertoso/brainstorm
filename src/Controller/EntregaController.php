@@ -137,8 +137,6 @@ class EntregaController extends AbstractController
     // para las descargas.
     $subidasEntrega = $subidaRepository->findBy(['entrega' => $entrega]);
 
-    $notaMedia = 0;
-
     $randomColor = $this->colorService->getRandomColor();
 
     return $this->render('entrega/entrega.html.twig', [
@@ -150,7 +148,6 @@ class EntregaController extends AbstractController
         'subidasEntrega' => $subidasEntrega, // Pasar las subidas a la plantilla
         'nota' => $nota,
         'latestNota' => $latestNota,
-        'notaMedia' => $notaMedia, // Pasar la nota media al template
     ]);
 }
     
