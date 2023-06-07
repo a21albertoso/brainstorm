@@ -8,12 +8,15 @@
     <div class="container-fluid">
         <nav class="navbar mx-auto navbar-expand-md navbar-light bg-white">
 
+        <img src="{{ asset('logo.png') }}" style="width: 80px;" alt="Logo" class="logo-image d-none d-md-inline me-auto">
+
+
                  <h3 class="optimo rosa mx-auto ms-3 d-none d-md-inline" style="position: absolute; left: 50%; transform: translateX(-50%);" href="#">
                 Brainstorm Boulevard
             </h3>
             <span class="d-inline d-md-none">
                 <h3 class="optimo rosa mx-auto ms-3" href="#">
-                    Brainstorm
+                    <img src="{{ asset('logo.png') }}" style="width: 80px;" alt="Logo" class="logo-image me-auto">
                 </h3>
             </span>
 
@@ -141,87 +144,59 @@
 </div>
 
             {% if 'ROLE_ADMIN' in app.user.roles %}
-                <div class="col-md-2 mx-auto m-5 bg-white card" style="height: 50%;">
-                    <ul class="nav flex-column">
+            <div class="col-md-3 mx-auto m-5 " style="height: 50%;">
+                <div class="row text-center mx-auto" style="width: 70%;">
+                    <ul class="nav bg-white card">
                         <li class="nav-item">
-                            <p class="card-header text-center rosa">Menú para la matriculación de alumnos</p>
+                            <p class="card-header text-center rosa" style="width: 105%;"><strong>Menú para la matriculación de alumnos</strong></p>
 
-                            <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+                            <a class="align-self-center text-center nav-link underline-link ms-5 ms-md-3 azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
 
-                            <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
+                            <a class="align-self-center text-center nav-link underline-link ms-5 ms-md-3 azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
                         </li>
                     </ul>
                 </div>
+
             {% endif %}
+            <div class="row">
+                <div class="col-md-3 mx-auto m-5 bg-white card" style="width: 100%;">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <h2 class="text-center mb-4"><strong>Usuarios de tus asignaturas:</strong></h2>
+                            {% for asignatura in userAsignaturas %}
+                                <h3 class="rosa text-center mt-2 align-center">{{ asignatura.nombre }}</h3>
+                                <table class="text-center align-center mb-4">
+                                    <tbody class="">
+                                        {% for user in users %}
+                                            {% if asignatura in user.asignaturas %}
+                                                <tr>
+                                                    <td class="text-center">
+                                                        <a class="nav-link d-flex align-items-center ms-2" href="{{ path('info_user', {'id': user.id}) }}">
+                                                            {% if user.foto is not null %}
+                                                                <img src="{{ asset('uploads/fotos/' ~ user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 40px; height: 40px;">
+                                                            {% else %}
+                                                                <div class="rounded-circle" style="width: 40px; height: 40px; background-color: {{ randomColor }}; text-align: center; line-height: 40px; color: #fff; font-weight: bold;">
+                                                                    {{ user.email|first|upper }}
+                                                                </div>
+                                                            {% endif %}
+                                                            <span class="ms-2">{{ user.email }}</span>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endfor %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
 
         </div>
     </div>
-
-    <style>
-.dropdown-content {
-    display: none;
-}
-
-.dropdown-content.show {
-    display: block;
-}
-
-.dropdown-btn {
-    background-color: #f1f1f1;
-    color: black;
-    padding: 8px 16px;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-    outline: none;
-}
-
-.dropdown-btn:hover {
-    background-color: #ddd;
-}
-
-.dropdown-btn:after {
-    content: '\25BC';
-    float: right;
-}
-
-.dropdown-btn.active:after {
-    content: '\25B2';
-}
-
-.dropdown-content a {
-    color: #8B4513; /* Color marrón */
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-}
-
-.dropdown-content a:hover {
-    background-color: #ddd;
-}
-
-.underline-link {
-        position: relative;
-        display: inline-block;
-        text-decoration: none;
-    }
-
-    .underline-link::before {
-        content: "";
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 0;
-        height: 2px;
-        background-color: #000; /* Color de subrayado */
-        transition: width 0.3s ease-in-out;
-    }
-
-    .underline-link:hover::before {
-        width: 100%;
-    }
-</style>
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {

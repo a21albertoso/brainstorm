@@ -9,6 +9,7 @@ use App\Entity\Entrega;
 use App\Form\FotoType;
 use App\Repository\EntregaRepository;
 use App\Repository\SubidaRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,7 +49,7 @@ class PrincipalController extends AbstractController{
     }
     
     #[Route(path: '/principal/{id}', name: 'principal', methods: ["GET"])]
-    public function index(CacheItemPoolInterface $cache, SubidaRepository $subidaRepository, EntregaRepository $entregaRepository, Security $security, AuthenticationUtils $authenticationUtils, $id = null){
+    public function index(UserRepository $userRepository, CacheItemPoolInterface $cache, SubidaRepository $subidaRepository, EntregaRepository $entregaRepository, Security $security, AuthenticationUtils $authenticationUtils, $id = null){
 
         // Obtener el usuario autenticado
         $user = $security->getUser();
@@ -103,6 +104,8 @@ class PrincipalController extends AbstractController{
         //correo del usuario
         $lastUsername = $authenticationUtils->getLastUsername();
 
+        $users = $userRepository->findAll();
+
         return $this->render('principal/principal.html.twig',[
             'user' => $user,
             'asignaturas' => $asignaturas,
@@ -115,6 +118,7 @@ class PrincipalController extends AbstractController{
             'temasPorAsignatura' => $temasPorAsignatura,
             'randomColor' => $randomColor,
             'entregasPendientes' => $entregasPendientes,
+            'users' => $users,
         ]);
 
     }
@@ -160,6 +164,23 @@ class PrincipalController extends AbstractController{
             'form' => $form->createView(),
         ]);
     }
+
+    #[Route(path: '/principal/usuario/{id}', name: 'info_user', methods: ["GET"])]
+public function usuarioInfoById(UserRepository $userRepository, Request $request, SluggerInterface $slugger, $id)
+{
+    $randomColor = $this->colorService->getRandomColor();
+
+    $user = $userRepository->find($id);
+
+    if (!$user) {
+        throw $this->createNotFoundException('No se encontró ningún usuario con el ID: ' . $id);
+    }
+
+    return $this->render('principal/perfilUser.html.twig', [
+        'randomColor' => $randomColor,
+        'user' => $user,
+    ]);
+}
 
     #[Route(path: '/principal/usuario/erasefoto', name: 'erasefoto', methods: ['POST'])]
 public function removeFoto()

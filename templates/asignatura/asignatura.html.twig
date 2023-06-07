@@ -9,12 +9,15 @@
     <div class="container-fluid">
        <nav class="navbar mx-auto navbar-expand-md navbar-light bg-white">
 
-                 <h3 class="optimo rosa mx-auto ms-3 d-none d-md-inline titulo" href="#">
+        <img src="{{ asset('logo.png') }}" style="width: 80px;" alt="Logo" class="logo-image d-none d-md-inline me-auto">
+
+
+                 <h3 class="optimo rosa mx-auto ms-3 d-none d-md-inline" style="position: absolute; left: 50%; transform: translateX(-50%);" href="#">
                 Brainstorm Boulevard
             </h3>
             <span class="d-inline d-md-none">
                 <h3 class="optimo rosa mx-auto ms-3" href="#">
-                    Brainstorm
+                    <img src="{{ asset('logo.png') }}" style="width: 80px;" alt="Logo" class="logo-image me-auto">
                 </h3>
             </span>
 
@@ -26,14 +29,14 @@
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item dropdown">
                          <a class="nav-link dropdown-toggle d-flex align-items-center ms-2" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            {% if app.user.foto is not null %}
+                            {% if app.user.foto is not null %} {# función para que el usuario tenga una foto de perfíl o por defecto se le ponga una como en una cuenta de google (se repite en todos los navbar) #}
                                 <img src="{{ asset('uploads/fotos/' ~ app.user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 40px; height: 40px;">
                             {% else %}
-                                <div class="rounded-circle perfildefecto" style="background-color: {{ randomColor }};">
+                                <div class="rounded-circle" style="width: 40px; height: 40px; background-color: {{ randomColor }}; text-align: center; line-height: 40px; color: #fff; font-weight: bold;">
                                     {{ app.user.email|first|upper }}
                                 </div>
                             {% endif %}
-                            <span class="ms-2">{{ app.user.email }}</span>
+                            <span class="ms-2">{{ last_username }}</span>
                         </a>
 
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
@@ -48,23 +51,20 @@
 
         <div class="row">
             {% if 'ROLE_ADMIN' in app.user.roles %}
-                <div class="col-md-2 mx-auto order-2 m-5 bg-white calendario">
+                <div class="col-md-2 mx-auto m-5 bg-white card order-2" style="height: 50%;">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            {# <p class="m-5 text-center"><a class="nav rosa nav-link" href="#">Calendario</a></p> #}
+                            <p class="card-header text-center rosa"><strong>Menú para la matriculación de alumnos</strong></p>
 
-                                <a class="align-self-center text-center nav-link azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+                            <a class="align-self-center text-center nav-link underline-link ms-5 ms-md-3 azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
 
-                                <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
-                            
-                                <a class="align-self-center text-center nav-link azul mx-auto" href="{{ path('newasignatura') }}">Registrar nueva asignatura</a>
-
+                            <a class="align-self-center text-center nav-link underline-link ms-5 ms-md-0 azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
                         </li>
                     </ul>
                 </div>
             {% endif %}
 
-            <div class="col-md-6 m-5 mx-auto order-1 bg-white">
+            <div class="col-md-6 m-5 mx-auto order-1 card bg-white">
                 <ul class="nav flex-column">
                     <li class="nav-item">
                         <a class="link-dark rosa" href="{{ path('principal') }}"><span class="material-symbols-outlined">
