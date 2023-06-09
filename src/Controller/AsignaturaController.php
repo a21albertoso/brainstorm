@@ -14,6 +14,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AsignaturaController extends AbstractController
@@ -83,7 +84,7 @@ class AsignaturaController extends AbstractController
     }
 
     #[Route('/principal/newasignatura', name: 'newasignatura', methods: ['GET', 'POST'])]
-    public function new(ManagerRegistry $doctrine, Request $request)
+    public function new(Security $security, ManagerRegistry $doctrine, Request $request)
     {
         $asignatura = new Asignatura();
 
@@ -92,6 +93,12 @@ class AsignaturaController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $doctrine->getManager();
+            $entityManager->persist($asignatura);
+            $entityManager->flush();
+
+            //añadir al docente directamente que crea la asignatura
+            $user = $security->getUser();
+            $asignatura->addUser($user);
             $entityManager->persist($asignatura);
             $entityManager->flush();
 

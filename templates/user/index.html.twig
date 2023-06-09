@@ -40,18 +40,32 @@ button {
     border: 1px solid #AF4933;
 }
 
+input[type="checkbox"]{
+    margin-left: 20px;
+}
+
+label{
+    margin-right: 2px;
+    margin-left: 2px;
+}
+
 </style>
 
 <div class="container-fluid">
-    <div class="row">
-        <h1 class="col-12 optimo rosa bg-white">BRAINSTORM BOULEVARD</h1>
-    </div>
 
-    <div class="row bg-white">
-        <h3 class="col-12 mt-2 optimo rosa bg-white">REGISTRATION FORM:</h3>
+    <div class="row">
+        
         <div class="col-12 text-center">
-            <div class="">
+
+            <div class="card mx-auto mt-5 mb-4" style="width: 30%;">
+                <h5 class="col-12 mt-2 optimo rosa ">REGISTRATION FORM:</h5>
                 {{ form(registration_form) }}
+                {% for flashError in app.session.flashBag.get('error') %}
+                    <div class="alert alert-danger tamaño" role="alert">
+                        <div>{{ flashError }}</div>
+                    </div>
+                {% endfor %}
+                <a href="{{ path('login') }}" class="btn rosa">Volver</a>
             </div>
         </div>
     </div>

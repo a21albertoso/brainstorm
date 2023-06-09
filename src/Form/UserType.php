@@ -24,15 +24,25 @@ class UserType extends AbstractType
                 'label' => 'Password: ',
             ])
             ->add('roles', ChoiceType::class, [
-                'label' => 'Administrator Role',
+                'label' => 'Administration of Role:',
                 'required' => false,
                 'choices' => [
                     'User' => 'ROLE_USER',
                     'Admin' => 'ROLE_ADMIN',
                 ],
-                'expanded' => true,
+                'attr' => [
+                    'class' => 'form-control', // Agrega la clase "form-control" para darle el estilo básico de Bootstrap a los campos de entrada.
+                ],
+                'expanded' => false,
                 'multiple' => true,
+                'label_attr' => [
+                    'class' => 'font-weight-bold', // Agrega la clase "font-weight-bold" para hacer el texto del label en negrita.
+                ],
+                'row_attr' => [
+                    'class' => 'mt-3', // Agrega la clase "mt-3" para agregar un margen superior de 3 unidades (puedes ajustar el valor según tus necesidades).
+                ],
             ])
+            
             ->add('submit', SubmitType::class, [
                 'label' => 'Register'
             ])

@@ -113,46 +113,47 @@
             </li>
             <li class="nav-item m-5">
                 {% set numeroEntregas = 0 %}
-                {% for asignatura in userAsignaturas %}
-                {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
-                {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
+                    {% set todasEntregadas = true %}
+                    {% for asignatura in userAsignaturas %}
+                        {% set entregasAsignatura = entregasPorAsignatura[asignatura.id] %}
+                        {% set numeroEntregas = numeroEntregas + entregasAsignatura|length %}
 
-                {% if entregasAsignatura|length > 0 %}
-                {% for entrega in entregasAsignatura %}
-                {% set subidaEncontrada = false %}
-                {% for subida in entrega.subidas %}
-                {% if subida.user == user %}
-                {% set subidaEncontrada = true %}
-                {% endif %}
-                {% endfor %}
+                        {% if entregasAsignatura|length > 0 %}
+                            {% for entrega in entregasAsignatura %}
+                                {% set subidaEncontrada = false %}
+                                {% for subida in entrega.subidas %}
+                                    {% if subida.user == user %}
+                                        {% set subidaEncontrada = true %}
+                                    {% endif %}
+                                {% endfor %}
 
-                {% if not subidaEncontrada %}
-                <h2 class="text-center"><a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a></h2>
-                {% endif %}
-                {% endfor %}
-                {% endif %}
-                {% endfor %}
+                                {% if not subidaEncontrada %}
+                                    {% set todasEntregadas = false %}
+                                    <h2 class="text-center"><a class="rosa nav-link" href="{{ path('entrega', {id: entrega.id}) }}">{{ entrega.nombre }}</a></h2>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
 
-                {# CAMBIAR PORQUE AL TENER ENTREGAS SUBIDAS Y ESTO EN BLANCO PARA EL ALUMNO NO SALE ESTO #}
-                {% if numeroEntregas == 0 %}
-                <h3 class="azul text-center">No hay tareas pendientes</h3>
+                    {% if numeroEntregas == 0 or todasEntregadas %}
+                        <h3 class="azul text-center">No hay tareas pendientes</h3>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
             </li>
         </ul>
     </div>
 </div>
-
+            <div class="col-md-3 mx-auto" style="height: 50%;">
             {% if 'ROLE_ADMIN' in app.user.roles %}
-            <div class="col-md-3 mx-auto m-5 " style="height: 50%;">
+            
                 <div class="row text-center mx-auto" style="width: 70%;">
-                    <ul class="nav bg-white card">
+                    <ul class="nav bg-white card mt-5">
                         <li class="nav-item">
                             <p class="card-header text-center rosa" style="width: 105%;"><strong>Menú para la matriculación de alumnos</strong></p>
 
-                            <a class="align-self-center text-center nav-link underline-link ms-5 ms-md-3 azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
+                            <a class="align-self-center me-5 me-md-1 text-center nav-link underline-link ms-5 ms-md-3 azul mx-auto mt-3" href="{{ path('newuserasignatura') }}">Matricular en cursos</a>
 
-                            <a class="align-self-center text-center nav-link underline-link ms-5 ms-md-3 azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
+                            <a class="align-self-center me-5 me-md-1 text-center nav-link underline-link ms-5 ms-md-3 azul mx-auto" href="{{ path('desmatricula') }}">Desmatricular de cursos</a>
                         </li>
                     </ul>
                 </div>
@@ -162,16 +163,16 @@
                 <div class="col-md-3 mx-auto m-5 bg-white card" style="width: 100%;">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <h2 class="text-center mb-4"><strong>Usuarios de tus asignaturas:</strong></h2>
+                            <h2 class="text-center mb-4 azul"><strong>Usuarios de tus asignaturas:</strong></h2>
                             {% for asignatura in userAsignaturas %}
                                 <h3 class="rosa text-center mt-2 align-center">{{ asignatura.nombre }}</h3>
-                                <table class="text-center align-center mb-4">
-                                    <tbody class="">
+                                <table class="text-center align-center mb-4 ms-4">
+                                    <tbody>
                                         {% for user in users %}
                                             {% if asignatura in user.asignaturas %}
                                                 <tr>
                                                     <td class="text-center">
-                                                        <a class="nav-link d-flex align-items-center ms-2" href="{{ path('info_user', {'id': user.id}) }}">
+                                                        <a class="nav-link underline-link d-flex azul align-items-center ms-2" href="{{ path('info_user', {'id': user.id}) }}">
                                                             {% if user.foto is not null %}
                                                                 <img src="{{ asset('uploads/fotos/' ~ user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 40px; height: 40px;">
                                                             {% else %}

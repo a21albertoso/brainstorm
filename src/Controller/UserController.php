@@ -3,12 +3,16 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 
 class UserController extends AbstractController
 {
@@ -19,8 +23,9 @@ class UserController extends AbstractController
         $this->em = $em;
     }
 
+
     #[Route('/registration', name: 'userRegistration')]
-    public function userRegistration(UserPasswordHasherInterface $passwordHasher, Request $request): Response
+    public function userRegistration(SessionInterface $session, UserPasswordHasherInterface $passwordHasher, Request $request): Response
     {
         $user = new User();
         $registration_form = $this->createForm(UserType::class, $user);
@@ -36,15 +41,22 @@ class UserController extends AbstractController
             $user->setRoles($roles);
 
             $plaintextPassword = $registration_form->get('password')->getData();
+
             $hashedPassword = $passwordHasher->hashPassword(
                 $user,
                 $plaintextPassword
             );
 
             $user->setPassword($hashedPassword);
-            $this->em->persist($user);
-            $this->em->flush();
-            return $this->redirectToRoute('login');
+            //enviar mensaje flash en caso de que el email de la cuenta ya exista.
+            try {
+                $this->em->persist($user);
+                $this->em->flush();
+                return $this->redirectToRoute('login');
+            } catch (UniqueConstraintViolationException $e) {
+                $session->getFlashBag()->add('error', 'Esta cuenta ya existe en la base de datos.');
+            }
+
         }
 
         return $this->render('user/index.html.twig', [
