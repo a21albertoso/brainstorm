@@ -59,31 +59,48 @@
                 <p class="rosa">Fecha de entrega: <strong>{{ entrega.fechaEntrega|date('Y-m-d H:i') }}</strong></p>
 
                 {% if is_granted('ROLE_ADMIN') %}
-                    {% for subidaEntrega in subidasEntrega %}
-                        {% if subidaEntrega.file %}
-                            <a class="link nav-link" href="{{ asset('uploads/archivos/' ~ subidaEntrega.file) }}">Entrega: {{ subidaEntrega.file }}</a> - <a href="{{ path('newnota', {'id': subidaEntrega.id}) }}">Asignar Nota</a>
-                        {% endif %}
+    {% for subidaEntrega in subidasEntrega %}
+        {% if subidaEntrega.file %}
+            <a class="link nav-link" href="{{ asset('uploads/archivos/' ~ subidaEntrega.file) }}">Entrega: {{ subidaEntrega.file }}</a> - <a href="{{ path('newnota', {'id': subidaEntrega.id}) }}">Asignar Nota</a>
+        {% endif %}
 
-                         {% if subidaEntrega.nota %}
-                            <span class="nota">
-                               {% if subidaEntrega.nota.numero >= 5 %}
-                                    Aprobado
-                                {% else %}
-                                    Suspendido
-                                {% endif %}
-                                (Nota: {{ subidaEntrega.nota.numero }})
-                            </span>
-                        {% endif %}
-
-                        </br></br></br>
-                    {% endfor %}
-                    {# Mostrar la nota media #}
-                    {% if subidasEntrega|length > 0 %}
-
-                        {# aquí va lo de nota media pero se va viendo #}
-
-                    {% endif %}
+        {% if subidaEntrega.nota %}
+            <span class="nota">
+                {% if subidaEntrega.nota.numero >= 5 %}
+                    Aprobado
+                {% else %}
+                    Suspenso
                 {% endif %}
+                (Nota: {{ subidaEntrega.nota.numero }})
+            </span>
+        {% endif %}
+
+        {% if subidaEntrega.fechaSubida %}
+            <p>Tarea entregada en {{ subidaEntrega.fechaSubida|date('Y-m-d H:i') }}</p>
+        {% endif %}
+
+        <br><br><br>
+    {% endfor %}
+
+    {% if subidasEntrega|length > 0 %}
+        {# Calcular la nota media #}
+        {% set sumaNotas = 0 %}
+        {% set contadorNotas = 0 %}
+
+        {% for subidaEntrega in subidasEntrega %}
+            {% if subidaEntrega.nota %}
+                {% set sumaNotas = sumaNotas + subidaEntrega.nota.numero %}
+                {% set contadorNotas = contadorNotas + 1 %}
+            {% endif %}
+        {% endfor %}
+
+        {% if contadorNotas > 0 %}
+            {% set notaMedia = sumaNotas / contadorNotas %}
+
+            <p>Nota media: {{ notaMedia }}</p>
+        {% endif %}
+    {% endif %}
+{% endif %}
 
                 
 
