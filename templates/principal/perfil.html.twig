@@ -16,7 +16,7 @@
                         <div class="d-flex justify-content-center">
                             {% if app.user.foto is not null %}
                                 <div class="d-flex align-items-center">
-                                <img src="{{ asset('uploads/fotos/' ~ app.user.foto) }}" alt="Foto de perfil" class="rounded-circle" style="width: 120px; height: 120px;">
+                                    <img src="{{ asset('uploads/fotos/' ~ app.user.foto) }}" alt="Foto de perfil" class="rounded-circle img-fluid" style="max-width: 120px; height: auto;">
                                 </div>
                             {% else %}
                                 <div class="rounded-circle" style="width: 120px; height: 120px; background-color: {{ randomColor }}; text-align: center; line-height: 110px; color: #fff; font-weight: bold;">

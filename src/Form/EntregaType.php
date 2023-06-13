@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Entrega;
 use App\Entity\Asignatura;
+use Symfony\Component\Validator\Constraints\DateTime;
 use Doctrine\DBAL\Types\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
@@ -27,11 +28,14 @@ class EntregaType extends AbstractType
             ])
             ->add('fecha_entrega', DateTimeType::class, [
                 'attr' => [
-                    'class' => 'form-control',
+                    'class' => 'form-control calendario',
                 ],
                 'row_attr' => [
                     'class' => 'form-group',
                 ],
+                'widget' => 'single_text',
+                
+              
             ])
             ->add('submit', SubmitType::class, [
                 'attr' => [

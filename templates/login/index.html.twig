@@ -4,34 +4,33 @@
 {% block body %}
     {% if error %}
     <div class="alert alert-danger tamaño" role="alert">
-    <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     </div> 
     {% endif %}
 
     <style>
-
-    .tamaño{
+    .tamaño {
         height: 80px;
     }
 
-    h1{
+    h1 {
         padding: 20px;
     }
 
-    div{
+    div {
         padding: 20px;
     }
 
-    input,label,button{
+    input, label, button {
         margin-top: 20px;
     }
     
-    .centrado{
+    .centrado {
         text-align: center;
         top: 15vh;
     }
 
-    p{
+    p {
         margin-top: 10px;
     }
 
@@ -63,12 +62,16 @@
         text-align: center; /* Centrar el texto */
     }
 
+    /* Media queries para hacer el contenido responsivo */
+    @media (max-width: 768px) {
+        .logo {
+            display: none; /* Ocultar la foto en tamaño md */
+        }
+    }
     </style>
 
     <div class="login-container">
-
-<div class="login-form bg-white">
-
+        <div class="login-form bg-white">
             <h1 class="optimo rosa">BRAINSTORM BOULEVARD</h1>
 
             <form action="{{ path('login') }}" method="post">
@@ -86,6 +89,6 @@
             </form>
         </div>
 
-        <img class="logo" src="{{ asset('logo.png') }}" style="width: 300px; alt="Logo">
+        <img class="logo" src="{{ asset('logo.png') }}" style="width: 300px;" alt="Logo">
     </div>
 {% endblock %}

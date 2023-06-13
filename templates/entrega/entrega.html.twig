@@ -65,18 +65,18 @@
         {% endif %}
 
         {% if subidaEntrega.nota %}
-            <span class="nota">
+            <span class="nota rosa">
                 {% if subidaEntrega.nota.numero >= 5 %}
                     Aprobado
                 {% else %}
                     Suspenso
                 {% endif %}
-                (Nota: {{ subidaEntrega.nota.numero }})
+                (Nota: <strong>{{ subidaEntrega.nota.numero }}</strong>)
             </span>
         {% endif %}
 
         {% if subidaEntrega.fechaSubida %}
-            <p>Tarea entregada en {{ subidaEntrega.fechaSubida|date('Y-m-d H:i') }}</p>
+            <p class="azul">Tarea entregada el <strong>{{ subidaEntrega.fechaSubida|date('Y-m-d H:i') }}</strong></p>
         {% endif %}
 
         <br><br><br>
@@ -97,7 +97,7 @@
         {% if contadorNotas > 0 %}
             {% set notaMedia = sumaNotas / contadorNotas %}
 
-            <p>Nota media: {{ notaMedia }}</p>
+            <p class="rosa"><strong>Nota media de alumnos: {{ notaMedia }}</strong></p>
         {% endif %}
     {% endif %}
 {% endif %}
