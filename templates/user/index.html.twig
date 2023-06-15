@@ -53,21 +53,29 @@ label{
 
 <div class="container-fluid">
 
-    <div class="row">
+    <div class="row justify-content-center"> <!-- Agregada clase justify-content-center para centrar horizontalmente -->
         
-        <div class="col-12 text-center">
-
-            <div class="card mx-auto mt-5 mb-4" style="width: 30%;">
-                <h5 class="col-12 mt-2 optimo rosa ">REGISTRATION FORM:</h5>
-                {{ form(registration_form) }}
-                {% for flashError in app.session.flashBag.get('error') %}
-                    <div class="alert alert-danger tamaño" role="alert">
-                        <div>{{ flashError }}</div>
+        <div class="col-md-6 col-lg-4"> <!-- Utilizando clases col-md-6 col-lg-4 para el tamaño de columna en pantallas medianas -->
+        
+            <div class="card mx-auto mt-5 mb-4">
+                <h5 class="col-12 mt-2 optimo rosa text-center">REGISTRATION FORM:</h5> <!-- Agregada clase text-center para centrar el texto -->
+                <form>
+                    <div class="card-body"> <!-- Agregada clase card-body para un estilo de contenido en la tarjeta -->
+                        {{ form(registration_form) }}
+                        {% for flashError in app.session.flashBag.get('error') %}
+                            <div class="alert alert-danger tamaño" role="alert">
+                                <div>{{ flashError }}</div>
+                            </div>
+                        {% endfor %}
+                        <div class="text-center"> <!-- Agregada clase text-center para centrar los botones -->
+                            <a href="{{ path('login') }}" class="btn rosa">Volver</a>
+                        </div>
                     </div>
-                {% endfor %}
-                <a href="{{ path('login') }}" class="btn rosa">Volver</a>
+                </form>
             </div>
+            
         </div>
+        
     </div>
 
 </div>

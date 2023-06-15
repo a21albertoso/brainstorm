@@ -97,7 +97,7 @@
         {% if contadorNotas > 0 %}
             {% set notaMedia = sumaNotas / contadorNotas %}
 
-            <p class="rosa"><strong>Nota media de alumnos: {{ notaMedia }}</strong></p>
+            <p class="rosa"><strong>Nota media del alumnado: {{ notaMedia|number_format(2, '.', ',') }}</strong></p>
         {% endif %}
     {% endif %}
 {% endif %}
